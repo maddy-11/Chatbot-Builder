@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon" />
+    <link rel="stylesheet" href="{% static 'styles/style.css' %}" />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?version=3.52.1&features=fetch"></script>
+    <script src="https://js.stripe.com/v3/"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" crossorigin="anonymous" />
+    <!-- -- -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- -- -->
+    <meta name="csrf-token" content="{{ csrf_token }}">
+ <!-- <meta property="og:title" content="Your Website Title" />
+    <meta property="og:description" content="A brief description of your website" />
+    <meta property="og:image" content="{% static 'path/to/your/image.jpg' %}" />
+    <meta property="og:url" content="http://www.yourwebsite.com/" />
+    <meta property="og:type" content="website" /> -->  
+    {% block og_tags %}
+    <meta property="og:type" content="website" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <meta property="og:url" content="{% block og_url %}{% endblock og_url %}" />
+    <meta property="og:title" content="{% block og_title %}{% endblock og_title %}" />
+    <meta property="og:description" content="{% block og_description %}{% endblock og_description %}" />
+    <meta property="og:image" content="{% block og_image %}{% endblock og_image %}" />
+    {% endblock og_tags %}
+    {% block extra_meta_tags %}{% endblock extra_meta_tags %}
+    <title>AI Apps</title>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.2/dropzone.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.css">
+
+    <!-- Include SweetAlert CSS -->
+<!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.css"> -->
+
+<!-- Include SweetAlert JavaScript -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    {% if request.user.push_notifications %}
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+
+    <script>
+      window.OneSignalDeferred = window.OneSignalDeferred || [];
+      OneSignalDeferred.push(function(OneSignal) {
+        OneSignal.init({
+          appId: "bf1fcabc-dedf-4bd1-b1b1-e67677d6f40d",
+        });
+      });
+    </script>
+{% endif %}
+</head>
+
+<body>
+
+    {% include 'navbar.html' %}
+
+    {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+        <li>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+ 
+
+    {% block content %}
+
+    
+    {% endblock %}
+     <!-- Hidden input for CSRF token -->
+     <input type="hidden" id="csrfToken" value="{{ csrf_token }}">
+    <script src="{% static 'js/script.js' %}"></script>
+    <script type="text/javascript">
+        <script type="text/javascript">
+  tailwind.config = {
+  darkMode: 'class',
+  theme: {
+    extend: {
+      colors: {
+        primary: {"50":"#eff6ff","100":"#dbeafe","200":"#bfdbfe","300":"#93c5fd","400":"#60a5fa","500":"#3b82f6","600":"#2563eb","700":"#1d4ed8","800":"#1e40af","900":"#1e3a8a","950":"#172554"}
+      }
+    },
+    fontFamily: {
+      'body': [
+    'Inter', 
+    'ui-sans-serif', 
+    'system-ui', 
+    '-apple-system', 
+    'system-ui', 
+    'Segoe UI', 
+    'Roboto', 
+    'Helvetica Neue', 
+    'Arial', 
+    'Noto Sans', 
+    'sans-serif', 
+    'Apple Color Emoji', 
+    'Segoe UI Emoji', 
+    'Segoe UI Symbol', 
+    'Noto Color Emoji'
+  ],
+      'sans': [
+    'Inter', 
+    'ui-sans-serif', 
+    'system-ui', 
+    '-apple-system', 
+    'system-ui', 
+    'Segoe UI', 
+    'Roboto', 
+    'Helvetica Neue', 
+    'Arial', 
+    'Noto Sans', 
+    'sans-serif', 
+    'Apple Color Emoji', 
+    'Segoe UI Emoji', 
+    'Segoe UI Symbol', 
+    'Noto Color Emoji'
+  ]
+    }
+  }
+}
+
+</script>
+    </script>
+
+</body>
+
+</html>

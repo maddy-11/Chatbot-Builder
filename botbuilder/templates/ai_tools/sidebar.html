@@ -1,0 +1,282 @@
+<style type="text/css">
+	.sidebar {
+		width: 20%!important;
+	}
+
+	@media (max-width: 1100px) {
+		.sidebar {
+			width: 25%!important;
+		}
+	}
+	.tooltip {
+		position: relative;
+		display: inline-block;
+		cursor: pointer;
+	}
+
+	.tooltip .tooltiptext {
+		visibility: hidden;
+		width: auto;
+		background-color: black;
+		color: #fff;
+		text-align: center;
+		border-radius: 6px;
+		padding: 5px 10px;
+		position: absolute;
+		z-index: 1;
+		top: 50%;
+		left: calc(100% + 10px); /* Position tooltip to the right */
+		transform: translateY(-50%);
+		opacity: 0;
+		transition: opacity 0.3s;
+		white-space: nowrap;
+	}
+
+	.tooltip:hover .tooltiptext {
+		visibility: visible;
+		opacity: 1;
+	}
+	.chat {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+	}
+
+	.chat button {
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
+	.chat .chat-name {
+		flex: 1;
+		text-align: left;
+		max-width:200px;
+	}
+	@media (max-width: 1450px) {
+		.chat .chat-name {
+			flex: 1;
+			text-align: left;
+			max-width:150px;
+			}
+	}
+
+	.chat .delete-chat {
+		flex-shrink: 0;
+		margin-left: 10px;
+	}
+</style>
+<div class="sidebar bg-white p-4 shadow-md flex">
+	<div class="panel border px-5 flex flex-col me-2 rounded-md" style="align-items: center;">
+		<button class="border-b border-gray-500 home tooltip" data-tooltip="Home">
+			<span class="tooltiptext">Go to Home</span>
+			<img src="/static/images/logo.jpg" class="mb-2" style="border-radius: 50%; width: 50px;">
+
+		</button>
+		<button  id="create-chatbot" class="mt-5 tooltip" data-tooltip="Create Chatbot">
+			<span class="tooltiptext">Create Chatbot</span>
+			<svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-sc942k" focusable="false" aria-hidden="true" viewBox="0 0 24 24" width="24" height="24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M19 11h-6V5a1 1 0 0 0-2 0v6H5a1 1 0 0 0 0 2h6v6a1 1 0 0 0 2 0v-6h6a1 1 0 1 0 0-2Z" fill="currentColor"></path></svg>
+		</button>
+
+		<button class="mt-5 customize-chatbot tooltip" data-tooltip="Customize Chatbot">
+			<span class="tooltiptext">Customize Chatbot</span>
+			<svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-sc942k" focusable="false" aria-hidden="true" viewBox="0 0 24 24" width="24" height="24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5.003 21.87c-.74 0-1.47-.28-2.03-.84-.54-.54-.84-1.26-.84-2.03 0-.77.3-1.49.84-2.03l13-13a2.873 2.873 0 0 1 4.06 0c.54.54.84 1.26.84 2.03 0 .77-.3 1.49-.84 2.03l-13 13c-.56.56-1.29.84-2.03.84Zm13-17.24c-.35 0-.7.13-.97.4l-13 13c-.26.26-.4.6-.4.97s.14.71.4.97c.53.53 1.41.53 1.94 0l13-13c.26-.26.4-.6.4-.97s-.14-.71-.4-.97c-.27-.27-.62-.4-.97-.4Z" fill="currentColor"></path><path d="M18.013 9.74c-.19 0-.38-.07-.53-.22l-3-3a.754.754 0 0 1 0-1.06c.29-.29.77-.29 1.06 0l3 3c.29.29.29.77 0 1.06-.15.15-.34.22-.53.22Zm-8.01-4.24c-.05 0-.09-.01-.14-.02l-1.36-.4-1.36.4c-.18.05-.37 0-.49-.13-.13-.13-.18-.31-.13-.49l.4-1.36-.4-1.36c-.05-.18 0-.37.13-.49a.5.5 0 0 1 .49-.13l1.36.4 1.36-.4c.18-.05.36 0 .49.13a.5.5 0 0 1 .13.49l-.4 1.36.4 1.36c.05.18 0 .37-.13.49a.471.471 0 0 1-.35.15Zm-1.5-1.44c.05 0 .09.01.14.02l.62.18-.18-.62a.447.447 0 0 1 0-.28l.18-.62-.62.18c-.09.03-.19.03-.28 0l-.62-.18.18.62c.03.09.03.19 0 .28l-.18.62.62-.18c.05-.01.09-.02.14-.02Zm-2.5 7.44c-.05 0-.09-.01-.14-.02l-1.36-.4-1.36.4c-.18.05-.36 0-.49-.13a.5.5 0 0 1-.13-.49l.4-1.36-.4-1.36c-.05-.18 0-.37.13-.49s.32-.18.49-.13l1.36.4 1.36-.4a.5.5 0 0 1 .49.13.5.5 0 0 1 .13.49l-.4 1.36.4 1.36c.05.18 0 .37-.13.49a.47.47 0 0 1-.35.15Zm-1.5-1.44c.05 0 .09.01.14.02l.62.18-.18-.62a.447.447 0 0 1 0-.28l.18-.62-.62.18c-.09.03-.19.03-.28 0l-.62-.18.18.62c.03.09.03.19 0 .28l-.18.62.62-.18c.05-.01.09-.02.14-.02Zm16.5 6.44c-.05 0-.09-.01-.14-.02l-1.36-.4-1.36.4c-.18.05-.36 0-.49-.13a.5.5 0 0 1-.13-.49l.4-1.36-.4-1.36c-.05-.18 0-.37.13-.49s.32-.18.49-.13l1.36.4 1.36-.4a.5.5 0 0 1 .49.13c.13.13.18.32.13.49l-.4 1.36.4 1.36c.05.18 0 .37-.13.49a.471.471 0 0 1-.35.15Zm-1.5-1.44c.05 0 .09.01.14.02l.62.18-.18-.62a.447.447 0 0 1 0-.28l.18-.62-.62.18c-.09.03-.19.03-.28 0l-.62-.18.18.62c.03.09.03.19 0 .28l-.18.62.62-.18c.05-.01.09-.02.14-.02Z" fill="currentColor"></path></svg>
+		</button>
+
+		<button class="mt-5 tooltip export-chatbot" data-tooltip="Export Chatbot">
+			<span class="tooltiptext">Export Chatbot</span>
+			<svg class="w-8 h-8 " viewBox="0 0 24 24" focusable="false" aria-hidden="true" data-testid="RocketLaunchOutlinedIcon">
+				<path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92"></path>
+			</svg>
+		</button>
+		<button class="mt-5 tooltip export-chats" data-tooltip="Export Chat Records">
+			<span class="tooltiptext">Export Chat</span>
+			<svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-sc942k" focusable="false" aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M17.013 19.17a1.63 1.63 0 0 1-.91-.276l-.983-.645a.772.772 0 0 1-.317-.85c.071-.235.102-.51.102-.818v-4.167c0-1.668-1.044-2.713-2.711-2.713H5.246c-.123 0-.235.01-.348.021a.819.819 0 0 1-.583-.204.737.737 0 0 1-.246-.563V6.119C4.069 3.109 6.177 1 9.186 1h8.697C20.892 1 23 3.109 23 6.119v5.22c0 1.485-.502 2.795-1.422 3.696-.736.747-1.76 1.229-2.926 1.372v1.136c0 .615-.338 1.168-.87 1.454a1.86 1.86 0 0 1-.767.174h-.002Zm-.614-1.924.665.379c.06-.03.06-.082.06-.092V15.68c0-.42.349-.768.768-.768 1.074 0 1.985-.338 2.61-.972.644-.634.971-1.535.971-2.61V6.107c0-2.18-1.402-3.582-3.581-3.582H9.194c-2.18 0-3.581 1.403-3.581 3.582v2.048h6.59c2.496 0 4.245 1.75 4.245 4.248v4.166c-.01.236-.02.461-.051.676h.002Z" fill="currentColor"></path><path d="M5.932 23a1.46 1.46 0 0 1-.676-.165 1.459 1.459 0 0 1-.777-1.3v-.778c-.9-.143-1.699-.521-2.292-1.115C1.409 18.864 1 17.799 1 16.57v-4.166c0-2.313 1.515-4.012 3.766-4.227.164-.01.317-.021.481-.021h6.948c2.496 0 4.246 1.75 4.246 4.248v4.166c0 .45-.052.87-.164 1.25-.46 1.842-2.026 2.998-4.083 2.998H9.646l-2.895 1.926a1.412 1.412 0 0 1-.82.256ZM5.246 9.69c-.123 0-.235.01-.348.02-1.473.134-2.363 1.147-2.363 2.693v4.166c0 .82.256 1.506.736 1.986.47.471 1.156.727 1.974.727.42 0 .767.348.767.768v1.34l2.968-1.975a.793.793 0 0 1 .43-.133h2.783c1.35 0 2.303-.675 2.599-1.863.071-.256.112-.542.112-.849v-4.167c0-1.668-1.043-2.713-2.711-2.713H5.246Z" fill="currentColor"></path></svg>
+		</button>
+	</div>
+	<div class="create_chatbot_sidebar hidden w-full">
+		<button id="name_desc" class="w-full bg-gray-100 py-2 px-4 rounded-md mb-4 text-left" disabled>Set Chatbot Name</button>	
+		<button id="upload" class="w-full bg-gray-100 py-2 px-4 rounded-md mb-4 text-left" disabled>Upload Knowledge Base</button>	
+		<button id="finalize" class="w-full bg-gray-100 py-2 px-4 rounded-md mb-4 text-left" disabled>Review and Save</button>	
+	</div>
+
+
+	<div class="sidebar-general w-full rounded-md sm:w-1/1">
+		<div class="bg-gray-100 border p-3 rounded-md">
+			<label>Chatbot Selection</label>
+			<div class="flex p-0 mb-4">
+				<select id="select-chatbot" class="border rounded-md px-4 py-0 me-2 bg-white w-full bg-gray-200 text-gray-700 py-2 px-4 rounded-md text-left">
+					{% for chatbot in chatbots %}
+					<option value="{{ chatbot.uuid }}" class="py-2">{{ chatbot.name }}</option>
+					{% empty %}
+					<option value="0" class="py-2">No Chatbot</option>
+					{% endfor %}
+				</select>
+				<button class="border bg-gray-100 border-gray-500 p-2 rounded chatbot_settings">
+					<svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1vz4nte" focusable="false" aria-hidden="true" viewBox="0 0 22 22" xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none"><path d="M11 14C11.7956 14 12.5587 13.6839 13.1213 13.1213C13.6839 12.5587 14 11.7956 14 11C14 10.2044 13.6839 9.44129 13.1213 8.87868C12.5587 8.31607 11.7956 8 11 8C10.2044 8 9.44129 8.31607 8.87868 8.87868C8.31607 9.44129 8 10.2044 8 11C8 11.7956 8.31607 12.5587 8.87868 13.1213C9.44129 13.6839 10.2044 14 11 14Z" stroke="currentColor" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"></path><path d="M1 11.8802V10.1202C1 9.08018 1.85 8.22018 2.9 8.22018C4.71 8.22018 5.45 6.94018 4.54 5.37018C4.02 4.47018 4.33 3.30018 5.24 2.78018L6.97 1.79018C7.76 1.32018 8.78 1.60018 9.25 2.39018L9.36 2.58018C10.26 4.15018 11.74 4.15018 12.65 2.58018L12.76 2.39018C13.23 1.60018 14.25 1.32018 15.04 1.79018L16.77 2.78018C17.68 3.30018 17.99 4.47018 17.47 5.37018C16.56 6.94018 17.3 8.22018 19.11 8.22018C20.15 8.22018 21.01 9.07018 21.01 10.1202V11.8802C21.01 12.9202 20.16 13.7802 19.11 13.7802C17.3 13.7802 16.56 15.0602 17.47 16.6302C17.99 17.5402 17.68 18.7002 16.77 19.2202L15.04 20.2102C14.25 20.6802 13.23 20.4002 12.76 19.6102L12.65 19.4202C11.75 17.8502 10.27 17.8502 9.36 19.4202L9.25 19.6102C8.78 20.4002 7.76 20.6802 6.97 20.2102L5.24 19.2202C4.8041 18.9692 4.48558 18.5555 4.35434 18.07C4.22311 17.5844 4.28988 17.0666 4.54 16.6302C5.45 15.0602 4.71 13.7802 2.9 13.7802C1.85 13.7802 1 12.9202 1 11.8802Z" stroke="currentColor" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+				</button>
+			</div>
+		</div>
+		<hr class="my-2" style="height: 2px;">
+
+		<div class="conversations my-2">
+			<div class="flex mb-2">
+				<button id="addChatBtn" class="flex font-semibold ml-2 bg-black text-white px-4 w-full py-1 rounded" ><svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-sc942k" focusable="false" aria-hidden="true" viewBox="0 0 24 24" width="24" height="24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M19 11h-6V5a1 1 0 0 0-2 0v6H5a1 1 0 0 0 0 2h6v6a1 1 0 0 0 2 0v-6h6a1 1 0 1 0 0-2Z" fill="currentColor"></path></svg> <p class="ms-5">Conversations</p></button>
+			</div>
+			<div class="conversation-buttons"></div>
+		</div>
+	</div>
+</div>
+
+
+<script>
+	$(document).on('click', '.delete-chat', function() {
+		localStorage.setItem('chat_uuid', 'None');
+		var button = $(this);
+		var sessionUuid = button.data('uuid');
+		if (sessionUuid == null || sessionUuid == undefined)
+		{
+			button.closest('.chat').fadeOut(300, function() {
+				$(this).remove();
+			});
+			$('#main-content').load("{% url 'ai_tools:chat_form' %}?chatbot_uuid=" + $('#select-chatbot').val());
+		}
+		else
+		{
+			$.ajax({
+		url: "{% url 'ai_tools:delete_chat_session' %}",  // Ensure this URL is correctly mapped in your Django URLs
+		method: "POST",
+		data: {
+			'uuid': sessionUuid,
+			'csrfmiddlewaretoken': '{{ csrf_token }}'  // Include the CSRF token if you are using Django's CSRF protection
+		},
+		success: function() {
+			button.closest('.chat').fadeOut(300, function() {
+				$(this).remove();
+			});
+			localStorage.setItem('chat_uuid', undefined);
+			$('#main-content').load("{% url 'ai_tools:chat_form' %}?chatbot_uuid=" + $('#select-chatbot').val());
+		},
+		error: function() {
+			alert("Error deleting chat session.");
+		}
+	});
+		}
+	});
+
+	$(document).ready(function() {
+
+		function loadChatSessions() {
+			var chatbotUuid = $('#select-chatbot').val();
+			$.ajax({
+				url: "{% url 'ai_tools:get_chat_sessions' %}",
+				data: {
+					'chatbot_uuid': chatbotUuid
+				},
+				success: function(data) {
+					console.log(data)
+					$('.conversations .chat').remove();
+					if (data.length > 0) {
+						data.forEach(function(session) {
+							var chatButton = $('<div class="chat bg-gray-200 p-2 rounded-md mb-2"><button class="chat-name text-gray-700 w-full rounded-md text-left ps-2" data-uuid="' + session.uuid + '">' + session.name + '</button><button class="delete-chat text-red-600" data-uuid="' + session.uuid + '"><i class="fas fa-trash"></i></button></div>');
+							$('.conversation-buttons').prepend(chatButton);
+						});
+					}
+				}
+			});
+		}
+
+		$('#select-chatbot').change(function(){
+			loadChatSessions();
+			localStorage.setItem('chat_uuid', 'None');
+			$('#main-content').load("{% url 'ai_tools:chat_form' %}?chatbot_uuid=" + $('#select-chatbot').val());
+		});
+
+
+		var chatbotUuid = $('#select-chatbot').val();
+		if (chatbotUuid != 0){
+			loadChatSessions();
+		}
+
+
+		function isNewChatButtonExists() {
+			return $('.conversations button:contains("New Chat")').length > 0;
+		}
+
+		$('#addChatBtn').click(function(){
+			var chatButton = $('<div class="chat bg-gray-200 p-2 rounded-md mb-2" style="display:none"><button class="chat-name text-gray-700 w-full rounded-md text-left ps-2" >New Chat</button><button class="delete-chat text-red-600"><i class="fas fa-trash"></i></button></div>');
+			$('.conversation-buttons').prepend(chatButton);
+			chatButton.fadeIn();
+			$('#main-content').load("{% url 'ai_tools:chat_form' %}?chatbot_uuid=" + $('#select-chatbot').val());
+			localStorage.setItem('chat_uuid', 'None');
+		});
+
+		$('.home').click(function(){
+			if (!isNewChatButtonExists()) {
+				var newChatButton = $('<div class="chat bg-gray-200 p-2 rounded-md mb-2" style="display:none"><button class="chat-name text-gray-700 w-full rounded-md text-left ps-2">New Chat</button><button class="delete-chat text-red-600"><i class="fas fa-trash"></i></button></div>');
+				$('.conversation-buttons').prepend(newChatButton);
+				newChatButton.fadeIn();
+			}
+			$('.create_chatbot_sidebar').addClass('hidden')
+			$('.sidebar-general').removeClass('hidden')
+			$('#main-content').load("{% url 'ai_tools:chat_form' %}?chatbot_uuid=" + $('#select-chatbot').val());
+			localStorage.setItem('chat_uuid', 'None');
+		});
+
+		if($('#select-chatbot').val() != 0){
+
+			$('#main-content').load("{% url 'ai_tools:chat_form' %}?chatbot_uuid=" + $('#select-chatbot').val());
+		}
+
+
+		$('#create-chatbot').click(function() {
+			$('.create_chatbot_sidebar').removeClass('hidden')
+			$('.sidebar-general').addClass('hidden')
+			$('#main-content').load("{% url 'ai_tools:chatbot_form' %}");
+		});
+
+
+		$('.customize-chatbot').click(function() {
+			var chatbot = $('#select-chatbot').val();
+			$('.create_chatbot_sidebar').addClass('hidden')
+			$('.sidebar-general').removeClass('hidden')
+			$('#main-content').load("{% url 'ai_tools:chatbot_customizations' %}?chatbot_uuid=" + chatbot);
+		});
+		$(document).on('click', '.chat .chat-name', function() {
+			var chat = $(this).data('uuid')
+			if(chat != undefined){
+
+				$('#main-content').load("{% url 'ai_tools:chat_form' %}?chat_uuid=" + chat);
+			}
+
+		});
+		$('.chatbot_settings').click(function() {
+			var chatbot = $('#select-chatbot').val();
+			$('.create_chatbot_sidebar').addClass('hidden')
+			$('.sidebar-general').removeClass('hidden')
+			var url = "{% url 'ai_tools:chatbot_settings' chatbot_id='CHATBOT_ID' %}".replace('CHATBOT_ID', chatbot);
+			$('#main-content').load(url);
+		});
+
+		$('.export-chatbot').click(function() {
+			$('.create_chatbot_sidebar').addClass('hidden')
+			$('.sidebar-general').removeClass('hidden')
+			$('#main-content').load("{% url 'ai_tools:export_chatbot' %}");
+		});
+		$('.export-chats').click(function() {
+			$('.create_chatbot_sidebar').addClass('hidden')
+			$('.sidebar-general').removeClass('hidden')
+			$('#main-content').load("{% url 'ai_tools:export_chats' %}");
+		});
+
+        // Function to handle tooltips
+		$('.tooltip').hover(function() {
+            // Hover over code
+			var title = $(this).attr('data-tooltip');
+			$(this).find('.tooltiptext').text(title);
+		}, function() {
+            // Hover out code
+			$(this).find('.tooltiptext').text('');
+		});
+	});
+</script>

@@ -1,0 +1,235 @@
+<style type="text/css">
+    td{
+        padding: 20px!important;
+        border-bottom: solid 1px;
+    }
+    th{
+        text-align: left!important;
+    }
+</style>
+<div class="bg-white lg:w-3/4 mx-auto p-5">
+    <div class="flex" style="justify-content: space-around; align-items: center;">
+        <h2 class="text-4xl my-4">{{ chatbot.name }} Settings</h2>
+        <div class="flex">
+            <form method="post" id="train_form" class="me-2">
+                {% csrf_token %}
+                <input type="hidden" name="chatbot_name" value="{{ chatbot.name }}">
+                <button type="submit" class="bg-blue-900 text-white px-6 py-3 rounded-md btn train_btn">Retrain</button>
+            </form>
+            <button id="openModalBtn" class="bg-blue-900 text-white px-6 py-3 rounded-md btn me-2">Upload Files</button>
+            <button id="delete_chatbot" class="bg-red-900 text-white px-6 py-3 rounded-md btn">Delete Chatbot</button>
+        </div>
+    </div>
+    <div class="my-5">
+        <table width="100%" class="table">
+            <thead class="bg-gray-100">
+                <th class="p-2">File Name</th>
+                <th class="p-2">Upload Date</th>
+                <th class="p-2">Delete</th>
+            </thead>
+            <tbody id="data-body">
+                <!-- Data will be inserted here -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% include 'ai_tools/loader.html' %}
+{% include 'ai_tools/file_upload_modal.html' %}
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        // Show modal
+        $('#openModalBtn').click(function() {
+            $('#myModal').removeClass('hidden');
+        });
+
+        // Hide modal
+        $('#closeModalBtn').click(function() {
+            $('#myModal').addClass('hidden');
+        });
+
+        $('#train_form').submit(function(e){
+            e.preventDefault();
+            var formData = new FormData(this);
+            console.log(formData)
+            $.ajax({
+                url: '{% url "ai_tools:train_bot" %}',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                beforeSend: function(){
+                    $('.train_btn').prop('disabled', true)
+                    $('#loaderModal').removeClass('hidden');
+                },
+                success: function(response) {
+                    $('.train_btn').prop('disabled', false)
+                    $('#loaderModal').addClass('hidden');
+                    swal.fire('Chatbot Trained Successfully', {
+                        icon: "success",
+                    })
+                    
+                },
+                error: function(xhr, status, error) {
+                    $('.train_btn').prop('disabled', false)
+                    $('#loaderModal').addClass('hidden');
+                    swal.fire(xhr.responseJSON.error, {
+                        icon: "error",
+                    });
+                }
+            })
+        });
+
+
+        var chatbot = $('#select-chatbot').val();
+        $.ajax({
+            url: '{% url "ai_tools:get_knowledge_base" %}',
+            type: 'POST',
+            data: {
+                'chatbot' : chatbot,
+                        'csrfmiddlewaretoken': '{{ csrf_token }}' // Add CSRF token for security
+                    },
+                    success: function(data) {
+                        if (data.error) {
+                            alert(data.error);
+                        } else {
+        $('#data-body').empty(); // Clear existing data
+        if (data.urls != null) {
+            data.urls.forEach(function(urlData) {
+                var newRow = `
+                <tr>
+                <td class="p-2">${urlData.url}</td>
+                <td class="p-2">${new Date(urlData.uploaded_at).toLocaleDateString('en-GB')}</td>
+                <td class="p-2"><a href="#" class="delete-btn" data-url="${urlData.url}" data-file-path="${urlData.file_path}"><i class="fa fa-trash"></i></a></td>
+                </tr>
+                `;
+                $('#data-body').append(newRow);
+            });
+        }
+        if (data.files != null) {
+            data.files.forEach(function(fileData) {
+                var newRow = `
+                <tr>
+                <td class="p-2">${fileData.filename}</td>
+                <td class="p-2">${new Date(fileData.uploaded_at).toLocaleDateString('en-GB')}</td>
+                <td class="p-2"><a href="#" class="delete-btn" data-file-path="${fileData.file_path}"><i class="fa fa-trash"></i></a></td>
+                </tr>
+                `;
+                $('#data-body').append(newRow);
+            });
+        }
+    }
+},
+error: function(xhr, status, error) {
+    console.error(error);
+}
+});
+
+
+        $('#data-body').on('click', '.delete-btn', function() {
+            var filePath = $(this).data('file-path');
+            var url = $(this).data('url');
+            var row = $(this).closest('tr');
+            var chatbot_uuid = $('#select-chatbot').val();
+
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                url: '{% url "ai_tools:delete_knowledge_base_item" %}', // Update with your URL
+                type: 'POST',
+                data: {
+                    'file_path': filePath || null,
+                    'url': url || null,
+                    'chatbot_uuid': chatbot_uuid,
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                },
+                success: function(response) {
+                    if(response.success) {
+                        row.fadeOut(500, function() {
+                            $(this).remove();
+                        });
+                        Swal.fire(
+                            'Deleted!',
+                            'Your file has been deleted.',
+                            'success'
+                            );
+                    } else {
+                        Swal.fire(
+                            'Error!',
+                            'Error deleting item: ' + response.error,
+                            'error'
+                            );
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error(error);
+                    Swal.fire(
+                        'Error!',
+                        'Error deleting item.',
+                        'error'
+                        );
+                }
+            });
+                }
+            });
+        });
+
+
+
+        $('#delete_chatbot').click(function(){
+
+            var chatbot_uuid = $('#select-chatbot').val();
+
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                url: '{% url "ai_tools:delete_chatbot" %}', // Update with your URL
+                type: 'POST',
+                data: {
+                    'chatbot_uuid': chatbot_uuid,
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                },
+                success: function(response) {
+                    Swal.fire(
+                        'Deleted!',
+                        'Your Chatbot has been deleted.',
+                        'success'
+                        );
+                    location.reload();
+
+                },
+                error: function(xhr, status, error) {
+                    console.error(error);
+                    Swal.fire(
+                        'Error!',
+                        'Error deleting chatbot.',
+                        'error'
+                        );
+                }
+            });
+                }
+            });
+        });
+
+    });
+</script>

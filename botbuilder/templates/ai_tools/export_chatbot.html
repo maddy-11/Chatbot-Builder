@@ -1,0 +1,113 @@
+<style type="text/css">
+.code-container {
+	position: relative;
+	border-radius: 5px;
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.copy-btn {
+	color: white;
+	border: none;
+	padding: 2px;
+	border-radius: 3px;
+	cursor: pointer;
+	margin-bottom: 10px;
+}
+
+.copy-btn:hover {
+	background-color: black;
+}
+
+pre {
+	margin: 0;
+}
+
+code {
+	display: block;
+	white-space: pre-wrap;
+	text-align: left;
+}
+
+.code-section {
+	margin-bottom: 20px;
+}
+
+.code-block {
+	background-color: #1a202c;
+	color: white;
+	padding: 10px;
+	border-radius: 5px;
+	overflow-x: auto;
+	display:flex;
+	justify-content:space-between;
+}
+</style>
+
+<div class="lg:w-3/4 md:w-4/4 my-5 bg-white p-5 mx-auto">
+	<h2 class="text-4xl">Export Chatbot</h2>
+	<p>Share Your Chatbot with our multiple options</p>
+	<div class="my-5 border p-5">
+		<p class="my-3">To Display The Chatbot As A Convenient Popup Bubble, Insert This Code Into The Main/Header Section Of Your Website:</p>
+
+		<!-- jQuery Copy Section -->
+		<div class="code-section">
+			<div class="code-block">
+				<pre><code id="jqueryCode">&lt;script src="https://code.jquery.com/jquery-3.6.0.min.js"&gt;&lt;/script&gt;</code></pre>
+			<button class="copy-btn" onclick="copyCode('jquery')">
+				<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+					<rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+					<path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+				</svg>
+			</button>
+			</div>
+		</div>
+
+		<!-- Embed Script Copy Section -->
+		<div class="code-section">
+			<p>Ensure to add jQuery above the following code.</p>
+			<div class="code-block">
+				<pre><code id="embedCode"></code></pre>
+			<button class="copy-btn" onclick="copyCode('embed')">
+				<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+					<rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+					<path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+				</svg>
+			</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<script>
+    // Replace this with your logic to get the current domain
+var currentDomain = window.location.origin;
+
+var chatbot_uuid = $('#select-chatbot').val();
+var embedScript = '<script src="' + currentDomain + '/embed.js/' + chatbot_uuid + '/"><\/script>';
+document.getElementById('embedCode').textContent = embedScript;
+
+function copyCode(type) {
+	var codeBlock;
+
+	if (type === 'jquery') {
+		codeBlock = document.getElementById('jqueryCode');
+	} else if (type === 'embed') {
+		codeBlock = document.getElementById('embedCode');
+	}
+
+	var range = document.createRange();
+	range.selectNodeContents(codeBlock);
+	var selection = window.getSelection();
+	selection.removeAllRanges();
+	selection.addRange(range);
+	document.execCommand('copy');
+	selection.removeAllRanges();
+
+        // Change background color temporarily to indicate copy
+	codeBlock.style.backgroundColor = 'black';
+	setTimeout(function() {
+            codeBlock.style.backgroundColor = ''; // Restore original background color
+        }, 1000); // Reset after 1 second (adjust timing as needed)
+	}
+</script>

@@ -1,0 +1,12 @@
+*.pyc
+__pycache__/
+db.sqlite3
+*.log
+*.sqlite3
+*.sqlite-journal
+*.log
+*.env
+/private/
+/media/chatbot/
+/media/chatbot_logos/
+/supervisor-logs/

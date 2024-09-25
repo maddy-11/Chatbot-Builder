@@ -1,0 +1,28 @@
+{% extends 'main.html' %}
+{% load static %}
+{% block content %}
+<style>
+	/* Custom styles */
+	body, html {
+/*		height: 100%;*/
+		margin: 0;
+		display: flex;
+		flex-direction: column;
+		color:#000;
+	}
+	
+</style>
+
+<div class="flex bg-gray-100" style="min-height: 88vh;">
+	{% include 'ai_tools/sidebar.html' %}
+
+	<!-- Main Content -->
+	<div id="main-content" class="flex-1 p-4">
+		<div class="lg:w-3/4 p-5 mt-5 mx-auto bg-white"> 
+			<h2 class="text-4xl">Create Your First Chatbot</h2>
+			<p class="my-5  p-5 border">Click on the '+' Icon on the left sidebar</p>
+			</div>
+	</div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,352 @@
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* Custom styles */
+.sidebar {
+    width: 20%;
+}
+body, html {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    color:#000;
+}
+.prompts-container {
+    display: flex;
+    overflow-x: auto; /* Enable horizontal scrolling */
+    max-width: 100%; /* Adjust as needed */
+    white-space: nowrap; /* Prevent prompts from wrapping */
+}
+
+.prompt {
+    padding: 10px;
+    margin-right: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: {{ current_chatbot.prompts_font_color }};
+    cursor: pointer;
+}
+.chat-container {
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex: 1; /* Take remaining vertical space */
+    height: 85vh;
+    background-color: {{ current_chatbot.background_color }};
+}
+.chat-history {
+    flex: 1;
+    padding: 15px;
+    overflow-y: auto;
+
+}
+.chat-message {
+    display: flex;
+    margin-bottom: 10px;
+    border-radius: 10px;
+}
+.chat-message p {
+    border-radius: 10px;
+    word-wrap: break-word;
+    font-family: {{ current_chatbot.font }};
+}
+.chat-message.user {
+    justify-content: flex-end;
+}
+.chat-message.user p {
+    padding: 10px;
+    background-color: {{ current_chatbot.user_background_color }};
+    color: {{ current_chatbot.user_font_color }};
+    align-self: flex-end;
+    border-top-right-radius: 0;
+}
+.chat-res{
+    max-width: 75%;
+    background-color: {{ current_chatbot.chatbot_background_color }};
+    color: {{ current_chatbot.font_color }};
+    padding: 0px 10px;
+    border-radius: 10px;
+    border-top-left-radius: 0;
+
+}
+.chat-message.chatbot p {
+    white-space: pre-wrap;
+    white-space: -moz-pre-wrap;
+    white-space: -pre-wrap;
+    white-space: -o-pre-wrap;
+    word-wrap: break-word;
+}
+.chat-message.no-wrap p {
+    white-space:nowrap;
+    background-color: {{ current_chatbot.chatbot_background_color }};
+    color: {{ current_chatbot.font_color }};
+    border-radius: 10px;
+    border-top-left-radius: 0;
+    padding: 10px 10px;
+}
+.chat-message ul {
+    list-style-type: disc;
+    margin-left: 20px;
+    padding-left: 0;
+}
+.chat-message li {
+    margin: 5px 0;
+}
+
+.chat-message p {
+ margin: 10px 0;
+}
+    /*.chat-input {
+  }*/
+  .chat-input {
+    background-color: {{ current_chatbot.input_background }};
+    color: {{ current_chatbot.input_font_color }};
+    box-sizing: border-box;
+    resize: none;
+}
+
+.input-container {
+    background-color: #f0f0f0;
+    border-top: 1px solid #ccc;
+    margin-top: auto; /* Push to bottom */
+}
+
+.loader {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.loader span {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    margin: 0 4px;
+    background-color: #ccc;
+    border-radius: 50%;
+    animation: loader 0.6s infinite alternate;
+}
+.loader span:nth-child(2) {
+    animation-delay: 0.2s;
+}
+.loader span:nth-child(3) {
+    animation-delay: 0.4s;
+}
+@keyframes loader {
+    from {
+        opacity: 0.3;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+</style>
+
+
+<div class="chat-container mx-auto lg:w-3/4">
+    <div class="chat-history" id="chat_history">
+        <!-- Conversation history will appear here -->
+        {% if chat.chat_history %}
+        <div>
+            {% for chat in chat.chat_history %}
+            <div>
+                <div class="chat-message user"><p>{{ chat.Me }}</p></div>
+                <div class="chat-message chatbot"><p>{{ chat.You }}</p></div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="chat-message no-wrap"><p>{{ welcome }}</p></div>
+        {% endif %}
+    </div>
+    <!-- <div id="promptsContainer" class="prompts-container mb-4"></div> -->
+    <div class="input-container p-2 bg-gray-200">
+        <div class="flex" style="align-items:flex-start;">
+            <textarea class="flex-1 rounded-md border-gray-300 chat-input p-3" id="user_input" name="user_input" rows="1" placeholder="Type your question here..."></textarea>
+            <button class="ml-2 bg-gray-700 text-white p-3 rounded-md submit_btn">
+                <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-z20xrw" focusable="false" aria-hidden="true" viewBox="0 0 20 20" width="20" height="20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M4.05648 16.3129C3.21648 16.3129 2.68398 16.0279 2.34648 15.6904C1.68648 15.0304 1.22148 13.6279 2.70648 10.6504L3.35898 9.35285C3.44148 9.18035 3.44148 8.82035 3.35898 8.64785L2.70648 7.35035C1.21398 4.37285 1.68648 2.96285 2.34648 2.31035C2.99898 1.65035 4.40898 1.17785 7.37898 2.67035L13.799 5.88035C15.3965 6.67535 16.274 7.78535 16.274 9.00035C16.274 10.2154 15.3965 11.3254 13.8065 12.1204L7.38649 15.3304C5.93149 16.0579 4.85148 16.3129 4.05648 16.3129ZM4.05648 2.81285C3.65148 2.81285 3.33648 2.91035 3.14148 3.10535C2.59398 3.64535 2.81148 5.04785 3.71148 6.84035L4.36399 8.14535C4.60398 8.63285 4.60398 9.36785 4.36399 9.85535L3.71148 11.1529C2.81148 12.9529 2.59398 14.3479 3.14148 14.8879C3.68148 15.4354 5.08398 15.2179 6.88399 14.3179L13.304 11.1079C14.4815 10.5229 15.149 9.75035 15.149 8.99285C15.149 8.23535 14.474 7.46285 13.2965 6.87785L6.87648 3.67535C5.73649 3.10535 4.75398 2.81285 4.05648 2.81285Z" fill="white"></path><path d="M8.12813 9.5625H4.07812C3.77062 9.5625 3.51562 9.3075 3.51562 9C3.51562 8.6925 3.77062 8.4375 4.07812 8.4375H8.12813C8.43563 8.4375 8.69063 8.6925 8.69063 9C8.69063 9.3075 8.43563 9.5625 8.12813 9.5625Z" fill="white"></path></svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    $(document).ready(function() {
+        const $textarea = $('#user_input');
+            const lineHeight = 20; // Assuming each line height is approximately 20px
+
+        $textarea.on('input', function() {
+                // Reset the rows to 1 to correctly calculate scrollHeight
+            $textarea.attr('rows', 1);
+
+            const padding = parseInt($textarea.css('padding-top')) + parseInt($textarea.css('padding-bottom'));
+            const border = parseInt($textarea.css('border-top-width')) + parseInt($textarea.css('border-bottom-width'));
+            const scrollHeight = this.scrollHeight - padding - border;
+            const rows = Math.min(Math.floor(scrollHeight / lineHeight), 10);
+
+            $textarea.attr('rows', rows > 1 ? rows : 1);
+        });
+
+        var prompts = {{ prompts|safe }};
+        var promptsContainer = $('<div class="prompts-container flex mb-4"></div>');
+        for (var i = 0; i < prompts.length; i++) {
+            promptsContainer.append('<div class="prompt px-5 py-2 border rounded-lg  m-5">' + prompts[i] + '</div>');
+        }
+        var allow_prompts = '{{ chatbot.allow_prompts|safe }}';
+        var chatHistory = "{{ chat.chat_history|length }}";
+
+        if (allow_prompts == 'True' && chatHistory == 0) {
+            promptsContainer.insertBefore('.input-container');
+        }
+
+        $('.prompt').on('click', function() {
+            var promptText = $(this).text();
+            $('#user_input').val(promptText)
+            sendMessage();  // Pass the prompt text to sendMessage function
+        });
+
+        var chat_uuid = "{{ chat.uuid }}";
+        if (!chat_uuid || chat_uuid === 'undefined') {
+            chat_uuid = localStorage.getItem('chat_uuid');
+        }
+
+
+        $('.submit_btn').on('click',function(event) {
+        event.preventDefault();  // Prevent form submission
+        sendMessage();  // Function to handle sending message
+        });
+
+        $('#user_input').keydown(function(event) {
+            if (event.keyCode === 13 && !event.shiftKey) {
+                event.preventDefault();
+                sendMessage();
+            }
+        });
+
+        function sendMessage() {
+            var user_input = $('#user_input').val().trim();
+            var chatbot_id = $('#select-chatbot').val();
+            var chat_uuid = "{{ chat.uuid }}";
+            if (!chat_uuid || chat_uuid === 'undefined') {
+                chat_uuid = localStorage.getItem('chat_uuid');
+            }
+        if (user_input === '') return; // prevent sending empty messages
+
+            $('#chat_history').append('<div class="chat-message user"><p>' + user_input + '</p></div>');
+        $('#user_input').val('');  // Clear input field
+        $('#chat_history').scrollTop($('#chat_history')[0].scrollHeight);  // Scroll to the bottom
+
+            var loaderHtml = '<div class="chat-message chatbot"><div class="loader"><span></span><span></span><span></span><span></span><span></span></div></div>';
+            $('#chat_history').append(loaderHtml);
+        $('#chat_history').scrollTop($('#chat_history')[0].scrollHeight);  // Scroll to the bottom
+            var url = '{% url "ai_tools:get_chatbot_response" chatbot_uuid="__chatbot_id__" %}'.replace('__chatbot_id__', chatbot_id);
+
+
+            var csrf_token = "{{ csrf_token }}";
+            $.ajax({
+                type: 'POST',
+                url: url,
+                data: {
+                    csrfmiddlewaretoken: csrf_token,
+                    user_input: user_input,
+                    chat_id: chat_uuid
+                },
+                success: function(response) {
+                    console.log(response);
+                    $('.loader').parent().remove();
+                    $('#chat_history').append('<div class="chat-message chatbot"><p>' + formatText(response.response) + '</p></div>');
+                $('#chat_history').scrollTop($('#chat_history')[0].scrollHeight);  // Scroll to the bottom
+                // Set local storage
+                    localStorage.setItem('chat_uuid', response.chat);
+                    chat = $('.chat button')
+                    if(chat.length <= 1){
+                        loadChatSessions();
+                    }
+                    if(chat_uuid == 'undefined'){
+                        loadChatSessions();
+                    }
+                    $('.chat').each(function() {
+                        var $button = $(this).find('button');
+                        var uuid = $button.attr('data-uuid');
+                        if (!uuid) {
+                            $button.attr('data-uuid', response.chat);
+                            loadChatSessions();
+                        }
+                    });
+                    $('.prompt').addClass('hidden')
+                },
+                error: function(xhr, status, error) {
+                    console.log(xhr);
+                    var errorMessage = "An Error Occurred";
+                    if (xhr.responseJSON && xhr.responseJSON.error) {
+                        errorMessage = xhr.responseJSON.error;
+                    }
+                    $('.loader').parent().remove();
+                    $('#chat_history').append('<div class="chat-message chatbot"><p style="background-color: darkred;">' + errorMessage + '</p></div>');
+                    $('#chat_history').scrollTop($('#chat_history')[0].scrollHeight);
+                }
+            });
+        }
+
+
+    });
+
+function loadChatSessions() {
+    var chatbotUuid = $('#select-chatbot').val();
+    $.ajax({
+        url: "{% url 'ai_tools:get_chat_sessions' %}",
+        data: {
+            'chatbot_uuid': chatbotUuid
+        },
+        success: function(data) {
+            $('.conversations .chat').remove();
+            if (data.length > 0) {
+                data.forEach(function(session) {
+                    var chatButton = $('<div class="chat bg-gray-200 p-2 rounded-md mb-2"><button class="chat-name text-gray-700 w-full rounded-md text-left ps-2" data-uuid="' + session.uuid + '">' + session.name + '</button><button class="delete-chat text-red-600" data-uuid="' + session.uuid + '"><i class="fas fa-trash"></i></button></div>');
+                    $('.conversation-buttons').prepend(chatButton);
+                });
+            }
+        }
+    });
+}
+
+function formatText(text) {
+        // Convert headings
+        text = text.replace(/\*\*(.*?)\*\*/g, '<span style="font-weight:bold;font-size: 1.2em;">$1</span>'); // Level 1 headings
+        text = text.replace(/### (.*?)\n/g, '<span style="font-weight:bold;font-size: 1em;">$1</span>\n'); // Level 3 headings
+
+        // Convert unordered list items
+        text = text.replace(/(\n\* .+?)(?=\n[^*]|\n*$)/gs, '\n<ul>$1</ul>'); // Wrap list items with <ul>
+    text = text.replace(/\n\* (.+?)(?=\n|$)/g, '<li>$1</li>');
+
+        // Handle special cases where lists are continuous
+        text = text.replace(/<\/ul>\n<ul>/g, ''); // Merge adjacent lists
+
+        // Convert line breaks to paragraph breaks for simple text
+        text = text.replace(/\n\n/g, '</p><p>'); // Double line break to paragraph
+
+        // Wrap in paragraph tags
+    text = text.replace(/\n\n/g, '</p><p>');
+
+    // Wrap entire text in a container
+    text = '<div class="chat-res"><p>' + text.trim() + '</p></div>';
+
+    return text;
+}
+
+$(document).ready(function() {
+        // Get the text from chat.You
+    var chatYouText = $('.chat-message.chatbot').text();
+    console.log(chatYouText)
+        // Format the text
+    var formattedText = formatText(chatYouText);
+
+        // Replace the content in chat.You with formatted HTML
+    $('.chat-message.chatbot').html(formattedText);
+});
+</script>

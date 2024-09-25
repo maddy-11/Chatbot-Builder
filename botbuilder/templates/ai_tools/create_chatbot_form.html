@@ -1,0 +1,485 @@
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.2/dropzone.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.css">
+
+<style type="text/css">
+.dz-progress{
+    display: none;
+}
+.dropzone .dz-message {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #555555;
+}
+.dropzone {
+    background-color: #F3F4F6!important;
+    border-radius: 5px;
+}
+.dropzone .dz-message button {
+    font-size: 120%;
+    border-radius: 5px;
+    padding-top: 12px;
+    padding-bottom: 12px;
+    padding-left: 25px;
+    padding-right: 25px;
+    border: solid 1px;
+    background: #fff;
+}
+
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 24px;
+}
+
+.toggle-switch input {
+    display: none;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 34px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 2px;
+    bottom: 2px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: #2196F3;
+}
+
+input:checked + .slider:before {
+    transform: translateX(26px);
+}
+.btn2{
+    width: 250px;
+    text-align: center;
+}
+</style>
+<div class="mx-auto bg-white p-8 rounded-md shadow-md">
+    <div id="message" class="hidden mb-4 p-2 rounded-md"></div>
+    <form id="chatbot-form" action="{% url 'ai_tools:create_chatbot' %}" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="mb-4">
+            <div class="lg:w-3/4 mx-auto">
+                <h2 class="text-4xl mb-4">Create a New Chatbot</h2>
+            </div>
+            <div class="name_and_description">
+                <div class="border lg:w-3/4 mx-auto p-5 rounded-lg mb-5">
+                    <label for="name" class="block text-gray-700">Chatbot Name <span class="text-red-600 font-bold">*</span></label>
+                    <p class="bg-blue-100 p-3 rounded my-3"><span class="rounded-full px-4 text-white bg-blue-500 me-2">i</span> Pick a name that defines your chatbot.</p>
+                    <input type="text" id="name" name="name" class="w-full mt-1 p-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none" value="" required>
+                    <div class="my-5">
+                        <label for="description" class="block text-gray-700">Description (Optional)</label>
+                        <textarea id="description" name="description" class="w-full mt-1 p-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none" ></textarea>
+                    </div>
+                </div>
+                <div class="buttons flex justify-between lg:w-9/10 mx-auto">
+                    <button type="button" class="border border-gray-700 text-gray-700 p-5 rounded-md btn2 font-bold back_home">Back</button>    
+                    <button type="button" class="bg-gray-900 text-white  px-4 rounded-md p-5 btn2 font-bold next_upload">Next</button>
+                </div>
+            </div>
+
+            <div id="file_upload" class="hidden">
+                <div class="border lg:w-3/4 mx-auto p-5 rounded-lg">
+                    <h3 class="block text-gray-700 items-center text-4xl">Upload Files</h3>
+                    <div class="flex flex-col items-center my-8 px-5">
+                        <button type="button" id="button1" class="w-full bg-gray-100 text-gray-700 py-5 px-4 rounded mb-5">Upload Files</button>
+                        <div id="box1" class="w-full hidden border p-5 rounded mb-5">
+                            <div class="w-full dropzone rounded" id="my-dropzone">
+                                <div class="dz-message" data-dz-message>
+                                    <span>Drop Files Here or<br><button type="button" class="mt-2 px-3 py-1 bg-gray-200 text-gray-700 rounded">Choose Files</button></span>
+                                    <p class="text-center">Max Size: 256MB</p>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" id="button2" class="w-full bg-gray-100 text-gray-700 py-5 px-4 rounded mb-5">Upload URLs</button>
+                        <div id="box2" class="w-full hidden p-5 rounded my-5 bg-gray-100">
+                            <div class="w-full rounded px-3 my-2 mb-5 text-4xl" >Acknowledge URLs
+                            </div>
+                            <p class="text-2xl my-2">Enter URL, YouTube, Google Drive or Google Sheets Link</p>
+                            <div id="input-container" class="">
+                                <div class="w-full border bg-white rounded px-3 py-3 mb-4 flex input-block">
+                                    <div class="py-3">
+                                        <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1gmtxwi" focusable="false" aria-hidden="true" viewBox="0 0 24 24" width="24" height="24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7.651 18.559A6.665 6.665 0 0 1 1 11.908a6.664 6.664 0 0 1 6.651-6.651c.419 0 .767.347.767.766a.774.774 0 0 1-.768.768 5.118 5.118 0 0 0-5.116 5.117 5.118 5.118 0 0 0 5.116 5.116 5.118 5.118 0 0 0 5.116-5.116c0-.42.35-.768.768-.768.42 0 .768.347.768.768a6.665 6.665 0 0 1-6.652 6.65h.001Z" fill="currentColor"></path><path d="M16.092 18.815a.774.774 0 0 1-.768-.768c0-.419.35-.768.768-.768a5.385 5.385 0 0 0 5.373-5.371 5.385 5.385 0 0 0-5.373-5.373 5.385 5.385 0 0 0-5.372 5.373.774.774 0 0 1-.767.768.773.773 0 0 1-.768-.768A6.917 6.917 0 0 1 16.092 5 6.917 6.917 0 0 1 23 11.908a6.917 6.917 0 0 1-6.908 6.907Z" fill="currentColor"></path></svg>
+                                    </div>
+
+                                    <input type="text" name="url_input[]" class="w-full p-3 text-2xl" placeholder="Enter URL, YouTube, Google Drive or Google Sheets Link">
+                                    <button type="button" class="p-3 text-2xl remove-btn remove-btn hidden">x</button>
+                                </div>
+                            </div>
+                            <button type="button" id="add-input-btn" class="w-full border border-gray-500 p-4 rounded hover:bg-gray-200">Include Another URL</button>
+                            <hr class="m-4">
+                            <div class="w-full bg-gray-200 text-gray-700 py-5 px-4 rounded my-5 flex items-center justify-between">
+                                <p>Upload Bulk URLs</p>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="urlToggle">
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                            <div id="upload_url_txt"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="buttons flex justify-between lg:w-9/10 mx-auto my-5">
+                    <button type="button" class="border border-gray-700 text-gray-700 p-5 rounded-md btn2 font-bold previous-1">Previous</button>
+                    <button type="button" class="bg-gray-900 text-white button px-4 rounded-md p-5 btn2 font-bold ">Next</button>
+                </div>
+            </div>
+        </div>
+        <div class="review hidden">
+            <div class="border lg:w-3/4 mx-auto p-5 rounded-lg">
+                <h3 class="block text-gray-700 items-center text-4xl">Review and Confirm</h3>
+                <p class="bg-blue-100 p-5 text-2xl rounded my-5"><span class="rounded-full px-4 text-white bg-blue-500 me-2">i</span> Please review all the details. Once you're sure everything is set up as you want, simply click 'Create' to build your chatbot.</p>
+
+                <p class="block text-gray-700 items-center font-bold">Chatot Name:</p>
+                <p class="chatbot_name p-5 bg-gray-100">name</p>
+                <!-- --- -->
+                <p class="block text-gray-700 items-center font-bold">Knowledge Files:</p>
+                <p class="chatbot_files p-5 bg-gray-100"></p>
+                <!-- --- -->
+                <p class="block text-gray-700 items-center font-bold">URLs Added:</p>
+                <p class="chatbot_urls p-5 bg-gray-100"></p>
+            </div>
+            <div class="buttons flex justify-between lg:w-9/10 mx-auto my-5">
+                <button type="button" class="border border-gray-700 text-gray-700 p-5 rounded-md btn2 font-bold previous-2">Previous
+                </button>    
+                <button type="submit" class="bg-gray-900 text-white  px-4 rounded-md submit p-5 btn2 font-bold">Create Chatbot</button>
+            </div>
+        </div>
+    </div>
+</form>
+</div>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
+{% include 'ai_tools/loader.html' %}
+<script type="text/javascript">
+Dropzone.autoDiscover = false;
+$(document).ready(function() {
+
+    $('.toggle-switch input[type="checkbox"]').on('change', function() {
+        $(this).parent().find('.slider').toggleClass('checked');
+    });
+
+    $('#urlToggle').on('change', function() {
+        var isChecked = $(this).is(':checked');
+        if (isChecked) {
+            data = `
+            <div>
+            <div class="relative rounded-md border border-dashed border-gray-400 p-2 flex items-center">
+            <div id="preview-container" class="mr-4">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M13 3a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2h8a2 2 0 002-2V3zM7 5a1 1 0 00-1 1v10a1 1 0 001 1h6a1 1 0 001-1V6a1 1 0 00-1-1H7z" clip-rule="evenodd" />
+            </svg>
+            </div>
+            <p id="file-name" class="text-gray-600">Select Text File</p>
+            <input type="file" id="chatbot-logo" name="url_txt" class="opacity-0 absolute inset-0 w-full h-full cursor-pointer" onchange="previewImage()">
+            </div>
+            </div>
+            `
+            $('#upload_url_txt').html(data);
+        } else {
+            $('#upload_url_txt').empty();
+        }
+    });
+
+    $('.back_home').click(function(){
+        $('.create_chatbot_sidebar').addClass('hidden')
+        $('.sidebar-general').removeClass('hidden')
+        var chatbot = $('#select-chatbot').val();
+        if (chatbot != 0) {
+            $('#main-content').load("{% url 'ai_tools:chat_form' %}?chatbot_uuid=" + chatbot);
+        }
+        else{
+            var data = `
+            <div id="main-content" class="flex-1 p-4">
+            <div class="lg:w-3/4 p-5 mt-5 mx-auto bg-white"> 
+            <h2 class="text-4xl">Create Your First Chatbot</h2>
+            <p class="my-5  p-5 border">Click on the '+' Icon on the left sidebar</p>
+            </div>
+            </div>
+            `
+            $('#main-content').html(data)
+        }
+    });
+
+
+    var box1Visible = false;
+    var box2Visible = false;
+
+    $("#button1").click(function() {
+        if (!box1Visible) {
+            $("#box2").fadeOut();
+            $("#box1").fadeIn();
+            box1Visible = true;
+            box2Visible = false;
+        } else {
+            $("#box1").fadeOut();
+            box1Visible = false;
+        }
+    });
+
+    $("#button2").click(function() {
+        if (!box2Visible) {
+            $("#box1").fadeOut();
+            $("#box2").fadeIn();
+            box2Visible = true;
+            box1Visible = false;
+        } else {
+            $("#box2").fadeOut();
+            box2Visible = false;
+        }
+    });
+
+    Dropzone.autoDiscover = false;
+    if (typeof myDropzone === 'undefined') {
+        Dropzone.autoDiscover = false;
+
+        var myDropzone = new Dropzone(".dropzone", {
+            url: "{% url 'ai_tools:create_chatbot' %}",
+            autoProcessQueue: false,
+            uploadMultiple: true,
+            parallelUploads: 100,
+            maxFiles: 100,
+            addRemoveLinks: true,
+            init: function () {
+                var dz = this;
+
+                document.getElementById("chatbot-form").addEventListener("submit", function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    if (dz.getQueuedFiles().length > 0) {
+                        dz.processQueue();
+                    } else {
+                        var formData = new FormData(document.getElementById("chatbot-form"));
+                        $.ajax({
+                            url: '{% url "ai_tools:create_chatbot" %}',
+                            type: 'POST',
+                            data: formData,
+                            processData: false,
+                            contentType: false,
+                            headers: {
+                                'X-CSRFToken': '{{ csrf_token }}'
+                            },
+                            beforeSend: function(){
+                                $('.submit').prop('disabled',true)
+                                $('.submit').addClass('bg-gray-400')
+                                $('.submit').removeClass('bg-gray-900')
+                                $('#loaderModal').removeClass('hidden');
+                                localStorage.setItem('newChatbot',document.getElementById("name").value)
+                            },
+                            success: function(response) {
+                                if (response.status === 'success') {
+                                    $('#message').removeClass('hidden bg-red-500').addClass('bg-green-500').text(response.message).fadeIn().delay(3000).fadeOut();
+                                    $('#chatbot-form')[0].reset();
+                                    $('#upload_url_txt').empty();
+                                    var name = localStorage.getItem('newChatbot')
+                                    train_bot(name);
+                                    
+                                } else {
+                                    $('#loaderModal').addClass('hidden');
+                                    $('#message').removeClass('hidden bg-green-500').addClass('bg-red-500').text(response.message).fadeIn().delay(3000).fadeOut();
+                                    $('.submit').prop('disabled',false)
+                                    $('.submit').removeClass('bg-gray-400')
+                                    $('.submit').addClass('bg-gray-900')
+                                }
+                            },
+                            error: function(xhr, status, error) {
+                                $('#loaderModal').addClass('hidden');
+                                $('#message').removeClass('hidden bg-green-500').addClass('bg-red-500').text('Error uploading file: ' + xhr.responseJSON.message).fadeIn().delay(3000).fadeOut();
+                                $('.submit').prop('disabled',false)
+                                $('.submit').removeClass('bg-gray-400')
+                                $('.submit').addClass('bg-gray-900')
+                            }
+                        });
+                    }
+                });
+
+                dz.on("sendingmultiple", function(file, xhr, formData) {
+                    var urls = [];
+                    $("input[name='url_input[]']").each(function() {
+                        urls.push($(this).val());
+                    });
+                    formData.append("name", document.getElementById("name").value);
+                    formData.append("description", document.getElementById("description").value);
+                    formData.append("url_input[]", urls);
+                    formData.append("csrfmiddlewaretoken", "{{ csrf_token }}");
+                    localStorage.setItem('newChatbot',document.getElementById("name").value)
+                    $('.submit').prop('disabled',true)
+                    $('.submit').removeClass('bg-gray-900')
+                    $('.submit').addClass('bg-gray-400')
+                    $('#loaderModal').removeClass('hidden');
+                });
+
+                dz.on("queuecomplete", function() {
+                    dz.removeAllFiles();
+                    $('#chatbot-form')[0].reset();
+                    var name = localStorage.getItem('newChatbot')
+                    train_bot(name);
+
+                });
+
+                dz.on("error", function(file, response) {
+                    $('#loaderModal').addClass('hidden');
+                    $('#message').removeClass('hidden bg-green-500').addClass('bg-red-500').text('Error uploading file: ' + response.message).fadeIn().delay(3000).fadeOut();
+                    $('.submit').prop('disabled',false)
+                    $('.submit').removeClass('bg-gray-400')
+                    $('.submit').addClass('bg-gray-900')
+                });
+            }
+        });
+}
+});
+
+function train_bot(name){
+    console.log(typeof(name))
+    $.ajax({
+        url: '{% url "ai_tools:train_bot" %}',
+        type: 'POST',
+        data: {
+            'chatbot_name': name,
+        },
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}'
+        },
+        beforeSend: function(){
+            $('.train_btn').prop('disabled', true)
+            $('#loaderModal').removeClass('hidden');
+        },
+        success: function(response) {
+            $('.train_btn').prop('disabled', false)
+            $('#loaderModal').addClass('hidden');
+            Swal.fire('Chatbot Created Successfully', {
+                icon: "success",
+            });
+            location.reload();
+        },
+        error: function(xhr, status, error) {
+            $('.train_btn').prop('disabled', false)
+            $('#loaderModal').addClass('hidden');
+            Swal.fire(xhr.responseJSON.error, {
+                icon: "error",
+            });
+        }
+    })
+}
+
+$('.next_upload').click(function () {
+    if ($('#name').val().trim() === '') {
+        Swal.fire("Name is Required *");
+    }
+    else{
+        $('.name_and_description').fadeOut()
+        $('#file_upload').removeClass('hidden')
+        $('#file_upload').fadeIn()
+        $('#name_desc').removeClass('bg-gray-100')
+        $('#name_desc').addClass('bg-green-100')
+    }
+})
+
+$('.previous-1').click(function () {
+    $('.name_and_description').fadeIn()
+    $('#file_upload').fadeOut()
+})
+$('.previous-2').click(function () {
+    $('#file_upload').fadeIn()
+    $('.review').fadeOut()
+})
+
+$(document).ready(function() {
+    function toggleRemoveButtons() {
+        const inputBlocks = $('.input-block');
+        if (inputBlocks.length > 1) {
+            $('.remove-btn').removeClass('hidden');
+        } else {
+            $('.remove-btn').addClass('hidden');
+        }
+    }
+
+    $('#add-input-btn').click(function(){
+        data = `
+        <div class="w-full border bg-white rounded px-3 py-3 mb-4 flex input-block">
+        <div class="py-3">
+        <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1gmtxwi" focusable="false" aria-hidden="true" viewBox="0 0 24 24" width="24" height="24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7.651 18.559A6.665 6.665 0 0 1 1 11.908a6.664 6.664 0 0 1 6.651-6.651c.419 0 .767.347.767.766a.774.774 0 0 1-.768.768 5.118 5.118 0 0 0-5.116 5.117 5.118 5.118 0 0 0 5.116 5.116 5.118 5.118 0 0 0 5.116-5.116c0-.42.35-.768.768-.768.42 0 .768.347.768.768a6.665 6.665 0 0 1-6.652 6.65h.001Z" fill="currentColor"></path><path d="M16.092 18.815a.774.774 0 0 1-.768-.768c0-.419.35-.768.768-.768a5.385 5.385 0 0 0 5.373-5.371 5.385 5.385 0 0 0-5.373-5.373 5.385 5.385 0 0 0-5.372 5.373.774.774 0 0 1-.767.768.773.773 0 0 1-.768-.768A6.917 6.917 0 0 1 16.092 5 6.917 6.917 0 0 1 23 11.908a6.917 6.917 0 0 1-6.908 6.907Z" fill="currentColor"></path></svg>
+        </div>
+
+        <input type="text" name="url_input[]" class="w-full p-3 text-2xl" placeholder="Enter URL, YouTube, Google Drive or Google Sheets Link">
+        <button type="button" class="p-3 text-2xl remove-btn">x</button>
+        </div>
+        `
+        $('#input-container').append(data);
+        toggleRemoveButtons();
+    });
+
+    $(document).on('click', '.remove-btn', function() {
+        $(this).closest('.input-block').remove();
+        toggleRemoveButtons();
+    });
+
+        toggleRemoveButtons();  // Initial call to set the correct state on page load
+});
+</script>
+
+<script>
+$(document).ready(function(){
+    $(".button").click(function(){
+        $('#file_upload').fadeOut()
+        $('.review').fadeIn()
+        $('#upload').removeClass('bg-gray-100')
+        $('#upload').addClass('bg-green-100')
+
+        var chatbot_name = $("#name").val();
+            var chatbot_files = ""; // Placeholder for files
+            var chatbot_urls = ""; // Placeholder for URLs
+        
+            // Get files
+            var files = []; // Placeholder for files
+        $("#my-dropzone .dz-filename").each(function() {
+            files.push($(this).text());
+        });
+        chatbot_files = files.join("<br>");
+        
+            // Get URLs
+            var urls = []; // Placeholder for URLs
+        $("input[name='url_input[]']").each(function() {
+            urls.push($(this).val());
+        });
+        chatbot_urls = urls.join("<br>");
+        
+            // Update paragraph text
+        $(".chatbot_name").text(chatbot_name);
+        if (chatbot_files.trim() !== "") {
+            $(".chatbot_files").html(chatbot_files);
+            $(".chatbot_files").addClass('p-5')
+        } else {
+            $(".chatbot_files").html('<p class="bg-blue-100 p-5 text-2xl rounded my-5"><span class="rounded-full px-4 text-white bg-blue-500 me-2">i</span> No Files Found.</p>');
+            $(".chatbot_files").removeClass('p-5')
+        }
+        if (chatbot_urls.trim() !== "") {
+            $(".chatbot_urls").html(chatbot_urls);
+            $(".chatbot_urls").addClass('p-5')
+        } else {
+            $(".chatbot_urls").html('<p class="bg-blue-100 p-5 text-2xl rounded my-5"><span class="rounded-full px-4 text-white bg-blue-500 me-2">i</span> No URLs Found.</p>');
+            $(".chatbot_urls").removeClass('p-5')
+        }
+    });
+});
+</script>

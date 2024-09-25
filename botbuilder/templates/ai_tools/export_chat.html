@@ -1,0 +1,40 @@
+<div class="lg:w-3/4 mx-auto bg-white p-5">
+    <h2 class="text-4xl">Export Chat Records</h2>
+    <p class="mt-2">Export chat conversations effortlessly.</p>
+
+    <div class="p-5 mt-5 border rounded-md">
+        <button id="export-btn" class="btn bg-gray-800 text-white">Export</button>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('#export-btn').click(function() {
+            var chatbot_uuid = $('#select-chatbot').val();
+            $.ajax({
+                    type: 'POST',
+                    url: '{% url 'ai_tools:export_chats' %}',
+                    data: {
+                        'chatbot_uuid': chatbot_uuid,
+                        'csrfmiddlewaretoken': '{{ csrf_token }}'
+                    },
+                    xhrFields: {
+                        responseType: 'blob'
+                    },
+                    success: function(response) {
+                        console.log('Successful');
+                        var link = document.createElement('a');
+                        link.href = window.URL.createObjectURL(response);
+                        link.download = 'chat_sessions.zip';
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                    },
+                    error: function(error) {
+                        console.error('Error:', error);
+                        // Handle errors if needed
+                    }
+                });
+            });
+        });
+    </script>

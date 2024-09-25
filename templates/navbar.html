@@ -1,0 +1,41 @@
+<nav class="bg-gray-800 p-4">
+    <div class="container mx-auto flex justify-between items-center">
+        <div class="text-white text-2xl font-semibold">
+            <a href="#" class="hover:text-gray-400">Chat Craft</a>
+        </div>
+           {% if request.user.is_authenticated %}
+        <div class="hidden md:flex space-x-4">
+            <a href="{% url 'logout' %}" class="block text-white hover:text-gray-400 py-2">Logout</a>
+        </div>
+    {% else %}
+    <div class="hidden md:flex space-x-4">
+            <a href="{% url 'login' %}" class="block text-white hover:text-gray-400 py-2">Login</a>
+            <a href="{% url 'register' %}" class="block text-white hover:text-gray-400 py-2">Register</a>
+        </div>
+    
+    {% endif %} 
+
+        </div>
+        <button id="hamburger-button" class="md:hidden text-white focus:outline-none">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+            </svg>
+        </button>
+    </div>
+    {% if request.user %}
+    <div id="mobile-menu" class="md:hidden mt-4 hidden">
+        <a href="{% url 'logout' %}" class="block text-white hover:text-gray-400 py-2">Logout</a>
+    </div>
+    {% else %}
+    <div id="mobile-menu" class="md:hidden mt-4 hidden">
+        <a href="{% url 'login' %}" class="block text-white hover:text-gray-400 py-2">Login</a>
+    </div>
+    {% endif %}
+</nav>
+
+<script>
+    document.getElementById('hamburger-button').addEventListener('click', function() {
+        const mobileMenu = document.getElementById('mobile-menu');
+        mobileMenu.classList.toggle('hidden');
+    });
+</script>

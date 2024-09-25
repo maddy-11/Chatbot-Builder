@@ -1,0 +1,520 @@
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+<style>
+    .color-input-circle {
+        width: 20px;  /* Adjust the width as needed */
+        height: 20px; /* Adjust the height as needed */
+        border-radius: 50%;
+        padding: 0;   /* Remove any default padding */
+        overflow: hidden; /* Ensure the circle is fully circular */
+        -webkit-appearance: none; /* Remove default styling */
+        appearance: none; /* Remove default styling */
+    }
+
+    .color-input-circle::-webkit-color-swatch-wrapper {
+        padding: 0; /* Remove default padding in webkit browsers */
+    }
+    .prompts-containerr{
+        overflow-x: auto;
+        max-width: 500px;
+        white-space: nowrap
+    }
+    .prompt {
+        padding: 5px;
+        margin-right: 10px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        background-color: {{ current_chatbot.prompts_font_color }};
+    }
+    .color-input-circle::-webkit-color-swatch {
+        border: none; /* Remove border in webkit browsers */
+        border-radius: 50%;
+    }
+    .border-top-radius-0{
+        border-top-left-radius: 0;
+        border-top-right-radius: 0;
+    }
+    .chat-container {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        margin: auto;
+        overflow: hidden;
+        background-color: {{ current_chatbot.background_color }};
+    }
+    .chat-history {
+        flex: 1;
+        padding: 15px;
+        overflow-y: auto;
+
+    }
+    .chat-message {
+        display: flex;
+        margin-bottom: 10px;
+    }
+    .chat-message p {
+        padding: 10px;
+        border-radius: 10px;
+        max-width: 75%;
+        word-wrap: break-word;
+        font-family: {{ current_chatbot.font }};
+    }
+    .chat-message.user {
+        justify-content: flex-end;
+    }
+    .chat-message.user p {
+        background-color: {{ current_chatbot.user_background_color }};
+        color: {{ current_chatbot.user_font_color }};
+        align-self: flex-end;
+        border-top-right-radius: 0;
+    }
+    .chat-message.chatbot p {
+        background-color: {{ current_chatbot.chatbot_background_color }};
+        color: {{ current_chatbot.font_color }};
+        border-top-left-radius: 0;
+    }
+    /*.chat-input {
+  }*/
+  .chat-input {
+    background-color: {{ current_chatbot.input_background }};
+    color: {{ current_chatbot.input_font_color }};
+    box-sizing: border-box;
+    resize: none;
+}
+textarea {
+    white-space: pre-line; /* Preserve line breaks and spaces */
+    font-family: inherit; /* Use the same font as the rest of the document */
+}
+</style>
+<div class="bg-white p-5">
+    <h2 class="text-4xl font-bold mb-6">Customize Chatbot</h2>
+    <hr>
+    <div class="flex">
+        <div class="w-2/3 bg-white p-10 rounded-lg shadow-lg">
+            <form class="mt-5" enctype="multipart/form-data">
+                <!-- Group of Fields -->
+                <div class="initial">
+                    <div class=" grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+                        <!-- Color inputs with corresponding color code -->
+                        <div>
+                            <label for="font" class="block text-gray-700 mb-2">Select Font</label>
+                            <div class="input-group">
+                                <select class="border rounded-md px-4 py-2 bg-white w-full bg-gray-200 text-gray-700 rounded-md text-left mb-2" name="font" id="font" onchange="updateColorCode(this)">
+                                    <option {% if current_chatbot.font == 'Roboto' %} selected {% endif %} value="Roboto">Roboto</option>
+
+                                    <option {% if current_chatbot.font == 'Montserrat' %} selected {% endif %} value="Montserrat">Montserrat</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div>
+                            <label for="prompts-font-color" class="block text-gray-700 mb-2">Prompts Background Color</label>
+                            <div class="flex items-center border p-2">
+                                <input type="color" id="prompts-font-color" name="prompts-font-color" class="color-input-circle border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 me-2" onchange="updateColorCode(this)" value="{{ current_chatbot.prompts_font_color }}">
+                                <input type="text" id="prompts-font-color-code" class="form-control" readonly>
+                            </div>
+                        </div>
+                        <div>
+                            <label for="background-color" class="block text-gray-700 mb-2">Background Color</label>
+                            <div class="flex items-center border p-2">
+                                <input type="color" id="background-color" name="background-color" class="color-input-circle border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 me-2" onchange="updateColorCode(this)" value="{{ current_chatbot.background_color }}">
+                                <input type="text" id="background-color-code" class="form-control" >
+                            </div>
+                        </div>
+                        <div>
+                            <label for="input-background" class="block text-gray-700 mb-2">Input Background</label>
+                            <div class="flex items-center border p-2">
+                                <input type="color" id="input-background" name="input-background" class="color-input-circle border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 me-2" onchange="updateColorCode(this)" value="{{ current_chatbot.input_background }}">
+                                <input type="text" id="input-background-code" class="form-control" readonly>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="input-background" class="block text-gray-700 mb-2">Input Font Color</label>
+                            <div class="flex items-center border p-2">
+                                <input type="color" id="input-font-color" name="input-font-color" class="color-input-circle border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 me-2" onchange="updateColorCode(this)" value="{{ current_chatbot.input_font_color }}">
+                                <input type="text" id="input-font-color-code" class="form-control" readonly>
+                            </div>
+                        </div>
+                        <div>
+                            <label for="ai-tools-font-color" class="block text-gray-700 mb-2">User Background Color</label>
+                            <div class="flex items-center border p-2">
+                                <input type="color" id="user-background-color" name="user-background-color" class="color-input-circle border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 me-2" onchange="updateColorCode(this)"
+                                value="{{ current_chatbot.user_background_color }}"
+                                >
+                                <input type="text" id="user-background-color-code" class="form-control" >
+                            </div>
+                        </div>
+                        <div>
+                            <label for="user-font-color" class="block text-gray-700 mb-2">User Font Color</label>
+                            <div class="flex items-center border p-2">
+                                <input type="color" id="user-font-color" name="user-font-color" class="color-input-circle border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 me-2" onchange="updateColorCode(this)" value="{{ current_chatbot.user_font_color }}">
+                                <input type="text" id="user-font-color-code" class="form-control" readonly>
+                            </div>
+                        </div>
+                        <div>
+                            <label for="user-border-color" class="block text-gray-700 mb-2">Chatbot Background Color</label>
+                            <div class="flex items-center border p-2">
+                                <input type="color" id="chatbot-background-color" name="chatbot-background-color" class="color-input-circle border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 me-2" onchange="updateColorCode(this)">
+                                <input type="text" id="chatbot-background-color-code" class="form-control">
+                            </div>
+                        </div>
+                        <div>
+                            <label for="font-color" class="block text-gray-700 mb-2">Chatbot Font Color</label>
+                            <div class="flex items-center border p-2">
+                                <input type="color" id="font-color" name="font-color" class="color-input-circle border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 me-2" onchange="updateColorCode(this)" value="{{ current_chatbot.font_color }}">
+                                <input type="text" id="font-color-code" class="form-control" readonly>
+                            </div>
+                        </div>
+
+                    <!-- <div>
+                        <label for="ai-tools-border-color" class="block text-gray-700 mb-2">AI Tools Border Color</label>
+                        <div class="flex items-center border p-2">
+                            <input type="color" id="ai-tools-border-color" name="ai-tools-border-color" class="color-input-circle border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 me-2" onchange="updateColorCode(this)">
+                            <input type="text" id="ai-tools-border-color-code" class="form-control" readonly>
+                        </div>
+                    </div> -->
+
+                </div>
+                <!-- Chatbot Logo and Custom URL -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="chatbot-logo" class="block text-gray-700 mb-2">Chatbot Logo</label>
+                        <div class="relative rounded-md border border-dashed border-gray-400 p-2 flex items-center">
+                            <div id="preview-container" class="mr-4">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M13 3a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2h8a2 2 0 002-2V3zM7 5a1 1 0 00-1 1v10a1 1 0 001 1h6a1 1 0 001-1V6a1 1 0 00-1-1H7z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                            <p id="file-name" class="text-gray-600">Upload your logo</p>
+                            <input type="file" id="chatbot-logo" name="chatbot-logo" class="opacity-0 absolute inset-0 w-full h-full cursor-pointer" onchange="previewImage()">
+                        </div>
+                    </div>
+                    <div>
+                        <label for="chatbot-url" class="block text-gray-700 mb-2">Chatbot Custom URL</label>
+                        <div class="relative rounded-md shadow-sm">
+                            <input type="url" id="chatbot-url" name="chatbot-url" class="w-full bg-gray-100 border-gray-300 rounded-md focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 p-2 py-3" placeholder="Enter Url Here ..." value="{% if chatbot.custom_url %}{{ chatbot.custom_url }}{% endif %}">
+
+
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Save button -->
+                
+                <div class="buttons flex justify-between  mx-auto mt-5">
+                    <button type="button" class="border border-gray-700 text-gray-700 p-5 px-20 rounded-md btn2 font-bold back ">Back</button>    
+                    <button type="button" class="bg-gray-900 text-white  px-4 rounded-md p-5 px-20 btn2 font-bold addPrompts">Next</button>
+                </div>
+            </div>
+
+
+            <div class="second bg-white p-6 rounded-lg" style="display:none">
+                <h2 class="text-4xl">Chatbot Personality</h2>
+                <p class="bg-blue-100 p-5 text-2xl rounded-lg my-5"><span class="rounded-full px-4 text-white bg-blue-500 me-2">i</span> In this box, you can give your chatbot its starting instructions, which will shape how it behaves and talks. The longer and more detailed your instructions, the better you can control the chatbot's style and tone. If you'd like some ideas for business-related prompts, hover here to see examples.</p>
+                <hr class="my-3">
+                <div class="my-5">
+                    <p>Chatbot Template</p> 
+                    <textarea id="myTextarea" name="prompt" rows="5" cols="60" class="border p-5 w-full" >{{ chatbot.prompt_template }}</textarea>
+                </div>
+
+                <div class="my-5">
+                    <p class="text-2xl">Chatbot Creativity</p> 
+                    <div class="my-3 w-full">
+                        {% include 'ai_tools/creativity_slider.html' %}
+                    </div>
+                </div>
+                <hr class="my-5">
+                <div class="buttons flex justify-between  mx-auto mt-5">
+                    <button type="button" class="border border-gray-700 text-gray-700 p-5 px-20 rounded-md btn2 font-bold back_colors ">Back</button>    
+                    <button type="button" class="bg-gray-900 text-white  px-4 rounded-md p-5 px-20 btn2 font-bold final">Next</button>
+                </div>
+            </div>
+
+            <!-- ----- -->
+
+            <div class="third bg-white p-6 rounded-lg" style="display:none">
+                <h2 class="text-4xl">Customize Chatbot</h2>
+                <hr class="my-3">
+                    <!-- <div class="p-5 flex justify-between">
+                    <p>Show Prompts</p> <input type="checkbox" name="show_prompts">
+                </div> -->
+                <div class="my-5">
+                    <p>Welcome Message</p> 
+                    <input type="text" name="welcome_message" value="{{ chatbot.welcome_message }}" class="w-full p-3 border rounded-md">
+                </div>
+
+                <div class="my-5">
+                    <p>Show Suggested Prompts</p> 
+                    {{ chatbot.allow_prompts }}
+                    <select name="show_prompts" class="w-full border px-4 py-2 rounded-md">
+                        <option {% if chatbot.allow_prompts == True %} selected {% endif %} value="0">Show Prompts</option>
+                        <option {% if chatbot.allow_prompts == False %} selected {% endif %} value="1">Hide Prompts</option>
+                    </select>
+                </div>
+                <div class="my-5">
+                    <p>Enter initial Prompts</p>
+                    <textarea rows="3" class="w-full p-5 border" name="prompts" placeholder="Enter one in each line">{{ prompts }}</textarea>
+                </div>
+
+                <div class="buttons flex justify-between  mx-auto mt-5">
+                    <button type="button" class="border border-gray-700 text-gray-700 p-5 px-20 rounded-md btn2 font-bold back_prompt ">Back</button>    
+                    <button type="submit" class="bg-gray-900 text-white  px-4 rounded-md p-5 px-20 btn2 font-bold">Save Settings</button>
+                </div>
+            </div>
+
+                <!-- <div class="mt-6 text-center" style="display:none">
+                    <button type="submit" class="bg-blue-500 text-white px-6 py-2 rounded-md shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-opacity-50"></button>
+                </div> -->
+            </form>
+        </div>
+
+
+        <div class="w-1/3 flex flex-col border border-gray-400 rounded-xl m-2" style="max-height: 65vh;">
+            <div class="p-3 px-5 title flex items-center justify-between">
+                <img src="/images/{{ chatbot.logo }}" class="w-20 h-20 object-cover rounded-full shadow-lg" alt="Chatbot's Image">
+                <p class="mx-auto font-bold-sm">Powered by AI Chatrooms</p>
+            </div>
+            <div class="container border-top-radius-0  chat-container mx-auto mt-5 bg-gray-100 flex-1">
+
+                <div class="chat-history" id="chat_history">
+                    <!-- Conversation history will appear here -->
+                    <div class="chat-message chatbot"><p>👋 Hi, how can I help you?</p></div>
+                    <div class="chat-message user"><p>This is dummy text</p></div>
+                </div>
+            
+
+            <div class="prompts-containerr flex mb-4">
+                <div class="prompt border rounded-lg  m-5">Explain the contents of this chatbot.</div>
+                <div class="prompt border rounded-lg  m-5">What is the temperature level in the chatbot?</div>
+                <div class="prompt border rounded-lg  m-5">How can I customize the appearance of the chatbot?
+                </div>
+            </div>
+            
+            <div class="bg-gray-200 m-1">
+                <div class="flex">
+                    <input
+                    type="text"
+                    class="chat-input flex-1 p-4"
+                    id="user_input"
+                    name="user_input"
+                    placeholder="Type your question here..."
+                    />
+                    <button class="ml-2 bg-gray-700 text-white p-3 rounded-md">
+                <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-z20xrw" focusable="false" aria-hidden="true" viewBox="0 0 20 20" width="20" height="20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M4.05648 16.3129C3.21648 16.3129 2.68398 16.0279 2.34648 15.6904C1.68648 15.0304 1.22148 13.6279 2.70648 10.6504L3.35898 9.35285C3.44148 9.18035 3.44148 8.82035 3.35898 8.64785L2.70648 7.35035C1.21398 4.37285 1.68648 2.96285 2.34648 2.31035C2.99898 1.65035 4.40898 1.17785 7.37898 2.67035L13.799 5.88035C15.3965 6.67535 16.274 7.78535 16.274 9.00035C16.274 10.2154 15.3965 11.3254 13.8065 12.1204L7.38649 15.3304C5.93149 16.0579 4.85148 16.3129 4.05648 16.3129ZM4.05648 2.81285C3.65148 2.81285 3.33648 2.91035 3.14148 3.10535C2.59398 3.64535 2.81148 5.04785 3.71148 6.84035L4.36399 8.14535C4.60398 8.63285 4.60398 9.36785 4.36399 9.85535L3.71148 11.1529C2.81148 12.9529 2.59398 14.3479 3.14148 14.8879C3.68148 15.4354 5.08398 15.2179 6.88399 14.3179L13.304 11.1079C14.4815 10.5229 15.149 9.75035 15.149 8.99285C15.149 8.23535 14.474 7.46285 13.2965 6.87785L6.87648 3.67535C5.73649 3.10535 4.75398 2.81285 4.05648 2.81285Z" fill="white"></path><path d="M8.12813 9.5625H4.07812C3.77062 9.5625 3.51562 9.3075 3.51562 9C3.51562 8.6925 3.77062 8.4375 4.07812 8.4375H8.12813C8.43563 8.4375 8.69063 8.6925 8.69063 9C8.69063 9.3075 8.43563 9.5625 8.12813 9.5625Z" fill="white"></path></svg>
+                </button>
+            </div>
+        </div>
+        </div>
+    </div>
+</div>
+
+
+</div>
+</div>
+
+<script>
+    (function() {
+        $('#font').on('change', function(){
+            font = $('#font').val();
+            $('.chat-message p').css('font-family', font)
+        })
+        function updateColorCode(input) {
+            const colorCodeInput = document.getElementById(input.id + '-code');
+            colorCodeInput.value = input.value;
+            if(input.id == 'font'){
+                font = $('font').val()
+            }
+            else if(input.id == 'prompts-font-color'){
+                $('.prompt').css('background-color', colorCodeInput.value);
+            }
+
+            else if(input.id == 'background-color'){
+                $('.chat-container').css('background-color', colorCodeInput.value);
+            }
+
+            else if(input.id == 'input-background'){
+                $('.chat-input').css('background-color', colorCodeInput.value);
+            }
+
+            else if(input.id == 'input-font-color'){
+                $('.chat-input').css('color', colorCodeInput.value);
+
+            }
+
+            else if(input.id == 'user-background-color'){
+                $('.chat-message.user p').css('background-color', colorCodeInput.value);
+
+            }
+
+            else if(input.id == 'user-font-color'){
+                $('.chat-message.user p').css('color', colorCodeInput.value);
+
+            }
+
+            else if(input.id == 'chatbot-background-color'){
+                $('.chat-message.chatbot p').css('background-color', colorCodeInput.value);
+
+            }
+
+            else if(input.id == 'font-color'){
+                $('.chat-message.chatbot p').css('color', colorCodeInput.value);
+
+            }
+
+        }
+
+        const colorInputs = document.querySelectorAll('.color-input-circle');
+        colorInputs.forEach(input => {
+            updateColorCode(input);
+            input.addEventListener('input', function() {
+                updateColorCode(input);
+            });
+        });
+    })();
+// ---
+    function previewImage() {
+        const previewContainer = document.getElementById('preview-container');
+        const fileNameDisplay = document.getElementById('file-name');
+        const fileInput = document.getElementById('chatbot-logo');
+        const file = fileInput.files[0];
+        const reader = new FileReader();
+
+        reader.onloadend = function() {
+            const previewImage = document.createElement('img');
+            previewImage.src = reader.result;
+            previewImage.alt = 'Preview';
+            previewImage.classList.add('h-12', 'w-12', 'object-contain');
+
+            // Display the uploaded image and the file name
+            previewContainer.innerHTML = '';
+            previewContainer.appendChild(previewImage);
+            fileNameDisplay.textContent = file.name;
+        };
+
+        if (file) {
+            reader.readAsDataURL(file);
+        } else {
+            // Reset to default state (display the SVG icon and reset the text)
+            previewContainer.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-400" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M13 3a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2h8a2 2 0 002-2V3zM7 5a1 1 0 00-1 1v10a1 1 0 001 1h6a1 1 0 001-1V6a1 1 0 00-1-1H7z" clip-rule="evenodd" /></svg>`;
+            fileNameDisplay.textContent = 'Upload your logo';
+        }
+    }
+
+    $(document).ready(function(){
+        const stops = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"];
+
+        let savedValue = {{ chatbot.creativity }};
+        savedValue = savedValue - 1
+            // Set the slider to the saved value
+        $('#slider').val(savedValue);
+
+            // Optionally, log the current stop to console when the page loads
+        console.log(stops[savedValue]);
+
+        $('#slider').on('input', function() {
+            const value = $(this).val();
+            console.log(stops[value]);
+        });
+
+        $('form').submit(function(e){
+            e.preventDefault();
+
+            const selectedStop = stops[$('#slider').val()];
+
+
+            let chatbot = $('#select-chatbot').val();
+
+            const form = $(this)[0];
+            const formData = new FormData(form);
+
+            formData.append('chatbot', chatbot);
+            formData.append('creativity', selectedStop);
+
+            console.log(formData);
+
+        // Send AJAX request
+            $.ajax({
+                type: 'POST',
+                url: '{% url 'ai_tools:customize_bot' %}',
+                data: formData,
+            processData: false,  // Prevent jQuery from converting the FormData object into a query string
+            contentType: false,  // Ensure the correct content type is used
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            success: function(response) {
+                console.log(response);
+
+                Swal.fire(response.success, {
+                    icon: "success",
+                })
+
+            },
+            error: function(xhr, textStatus, errorThrown) {
+                console.error(errorThrown);
+                Swal.fire(xhr.responseJSON.error, {
+                    icon: "error",
+                });
+            }
+        });
+        });
+    });
+
+    $('.back').click(function(){
+        $('.create_chatbot_sidebar').addClass('hidden')
+        var chatbot = $('#select-chatbot').val();
+        $('#main-content').load("{% url 'ai_tools:chat_form' %}?chatbot_uuid=" + chatbot);
+    });
+
+    $('.addPrompts').click(function(){
+        $('.initial').fadeOut()
+        $('.second').fadeIn();
+        $('.third').fadeOut()
+    });
+
+    $('.back_colors').click(function(){
+        $('.initial').fadeIn()
+        $('.second').fadeOut()
+        $('.third').fadeOut()
+    });
+
+    $('.final').click(function(){
+        $('.initial').fadeOut()
+        $('.second').fadeOut()
+        $('.third').fadeIn();
+    });
+
+    $('.back_prompt').click(function(){
+        $('.second').fadeIn();
+        $('.third').fadeOut()
+        $('.initial').fadeOut()
+    });
+
+    function resetTextarea() {
+        var textarea = document.getElementById('myTextarea');
+        var originalContent = textarea.getAttribute('data-original-content');
+
+        if (textarea.value !== originalContent) {
+            textarea.value = originalContent;
+        }
+    }
+
+        // Function to initialize original content on page load
+    window.onload = function() {
+        var textarea = document.getElementById('myTextarea');
+        textarea.setAttribute('data-original-content', textarea.value);
+    };
+</script>
+<script>
+  // Get the textarea element
+  var textarea = document.getElementById('myTextarea');
+  
+  // Trim leading spaces or tabs from each line
+  var lines = textarea.value.split('\n');
+  for (var i = 0; i < lines.length; i++) {
+    lines[i] = lines[i].trimLeft(); // Trim leading spaces or tabs
+}
+
+  // Update the textarea content
+textarea.value = lines.join('\n');
+</script>

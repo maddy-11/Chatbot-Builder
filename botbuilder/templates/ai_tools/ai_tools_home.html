@@ -1,0 +1,96 @@
+{% extends 'main.html' %}
+{% load static %}
+{% block content %}
+<style>
+.card-container {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 20px; /* Optional: space between cards */
+}
+
+.chatbotBuilder__card {
+    display: flex;
+    flex-direction: column; /* Change to column to place icon above title */
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 20px;
+    box-sizing: border-box;
+    border-radius: 8px;
+    background: #3f4156;
+    position: relative; /* Added to make it a positioning context */
+    text-decoration: none; /* Ensure the link does not have underlines */
+    color: inherit; /* Inherit text color */
+    width: 1000px;
+    flex: 1; /* Ensure the cards take equal width */
+}
+
+.chatbotBuilder__card-icon {
+    margin-bottom: 15px; /* Space between icon and text content */
+    background: black;
+    border-radius: 8px;
+}
+
+.chatbotBuilder__card-icon img {
+    width: 350px; /* Adjust the size of the icon as needed */
+    height: 300px;
+    border-radius: 8px; /* Apply the same border-radius to the image */
+}
+
+.chatbotBuilder__card-title {
+    margin: 0; /* Remove default margin */
+    font-size: 18px;
+    font-weight: bold;
+    color: #ffffff;
+}
+
+.chatbotBuilder__card-description {
+    margin: 5px 0 0 0; /* Adjust the margin for description */
+    font-size: 14px;
+    color: #d1d1d1;
+}
+
+/* Optional: Add hover effect for better user experience */
+.chatbotBuilder__card:hover {
+    background: #52536f; /* Slightly lighter background on hover */
+}
+</style>
+
+<main class="layout layout--3">
+  <div class="container">
+    <!-- Topics Start -->
+    <!-- Topics End -->
+
+    <!-- Room List Start -->
+    <div class="roomList">
+
+      <div class="card-container">
+        <a href="{% url 'ai_tools:chatbot_builder_home' %}" class="chatbotBuilder__card">
+          <div class="chatbotBuilder__card-icon">
+              <img src="{% static 'images/hero-bg.png' %}" alt="Icon" />
+          </div>
+          <div class="chatbotBuilder__card-content">
+              <h3 class="chatbotBuilder__card-title">Chatbot Builder</h3>
+              <p class="chatbotBuilder__card-description">Create and customize AI-powered chatbots with ease.</p>
+          </div>
+        </a>
+
+        <!-- <a href="{% url 'ai_tools:photo_generator_home' %}" class="chatbotBuilder__card">
+          <div class="chatbotBuilder__card-icon">
+              <img src="{% static 'images/colorful_robot.png' %}" alt="Icon" />
+          </div>
+          <div class="chatbotBuilder__card-content">
+              <h3 class="chatbotBuilder__card-title">AI Photo Generator</h3>
+              <p class="chatbotBuilder__card-description">Create beautiful photos using AI to share with friends.</p>
+          </div>
+        </a> -->
+
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- Include jQuery Library -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+{% endblock %}
