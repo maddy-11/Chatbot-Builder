@@ -39,6 +39,8 @@ def create_chatbot(request):
         uploaded_files = []
         name = request.POST.get('name')
         description = request.POST.get('description')
+        if Chatbot.objects.filter(name=name).exists():
+            return JsonResponse({'status': 'error', 'message': "Chatbot's Name Already Taken"}, status=500)
         if not description:
             description = "A dummy description"
         chatbot_dir = os.path.join("media", "chatbot", name, "data")

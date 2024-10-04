@@ -1,73 +1,132 @@
 <style type="text/css">
-	.sidebar {
-		width: 20%!important;
-	}
+.create_chatbot_sidebar{
+	flex-direction:column
+}
+.sidebar {
+	width: auto;
+	transition: transform 0.3s ease;
+}
+.sidebar-hidden {
+	transform: translateX(-100%);
+}
 
-	@media (max-width: 1100px) {
-		.sidebar {
-			width: 25%!important;
-		}
-	}
-	.tooltip {
-		position: relative;
-		display: inline-block;
-		cursor: pointer;
-	}
+.toggle-btn-desktop {
+	position: absolute;
+	right: -1rem;
+	justify-content:center;
+	align-items:center;
+	height:80px;
+	width:12px;
+	top: 40%;
+}
+.toggle-btn-mobile {
+	top: 50%;
+	transform: translateY(-50%);
+	transition: left 0.3s ease;
+}
+.tooltip {
+	position: relative;
+	display: inline-block;
+	cursor: pointer;
+}
 
-	.tooltip .tooltiptext {
-		visibility: hidden;
-		width: auto;
-		background-color: black;
-		color: #fff;
-		text-align: center;
-		border-radius: 6px;
-		padding: 5px 10px;
-		position: absolute;
-		z-index: 1;
-		top: 50%;
-		left: calc(100% + 10px); /* Position tooltip to the right */
-		transform: translateY(-50%);
-		opacity: 0;
-		transition: opacity 0.3s;
-		white-space: nowrap;
-	}
+.tooltip .tooltiptext {
+	visibility: hidden;
+	width: auto;
+	background-color: black;
+	color: #fff;
+	text-align: center;
+	border-radius: 6px;
+	padding: 5px 10px;
+	position: absolute;
+	z-index: 1;
+	top: 50%;
+	left: calc(100% + 10px); /* Position tooltip to the right */
+	transform: translateY(-50%);
+	opacity: 0;
+	transition: opacity 0.3s;
+	white-space: nowrap;
+}
 
-	.tooltip:hover .tooltiptext {
-		visibility: visible;
-		opacity: 1;
-	}
-	.chat {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-	}
+.tooltip:hover .tooltiptext {
+	visibility: visible;
+	opacity: 1;
+}
+.chat {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
 
-	.chat button {
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
-	}
+.chat button {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
 
+.chat .chat-name {
+	flex: 1;
+	text-align: left;
+	max-width:200px;
+}
+@media (max-width: 1450px) {
 	.chat .chat-name {
 		flex: 1;
 		text-align: left;
-		max-width:200px;
+		max-width:150px;
 	}
-	@media (max-width: 1450px) {
-		.chat .chat-name {
-			flex: 1;
-			text-align: left;
-			max-width:150px;
-			}
+}
+
+.chat .delete-chat {
+	flex-shrink: 0;
+	margin-left: 10px;
+}
+</style>
+<script>
+$(document).ready(function() {
+	$('#toggle-sidebar-mobile').css('left', $('#sidebar').outerWidth() + 'px');
+    // Toggle sidebar for mobile
+
+	$('#toggle-sidebar-mobile').click(function() {
+		sidebar_collapse()
+		$(this).text($(this).text() === '⇦' ? '⇨' : '⇦');
+
+	});
+     // sidebar_collapse()
+	function sidebar_collapse(){
+		$('#sidebar').toggleClass('-translate-x-full');
+		let sidebarWidth = $('#sidebar').outerWidth(); 
+
+    // Animate the toggle button for mobile
+		if ($('#sidebar').hasClass('-translate-x-full')) {
+			$('#toggle-sidebar-mobile').css('left', '0');
+		} else {
+			$('#toggle-sidebar-mobile').css('left', sidebarWidth + 'px');
+		}
 	}
 
-	.chat .delete-chat {
-		flex-shrink: 0;
-		margin-left: 10px;
-	}
-</style>
-<div class="sidebar bg-white p-4 shadow-md flex">
-	<div class="panel border px-5 flex flex-col me-2 rounded-md" style="align-items: center;">
+    // Toggle sidebar for desktop
+	$('#toggle-sidebar-desktop').click(function() {
+		$('#sidebar').toggleClass('-translate-x-full');
+      // $('#main-content').toggleClass('md:ml-64');
+		$(this).text($(this).text() === '⇦' ? '⇨' : '⇦');
+		$('.prompts-container').css('max-width', ($('#chat_history').outerWidth()) + 'px');
+		$('#sidebar').toggleClass('fixed h-full');
+		// $('.create-chatbot').toggleClass('hidden');
+		// $('.panel').toggleClass('hidden');
+		// $('.chat-container').toggleClass('lg:w-3/4');
+	});
+
+	$('#toggle-sidebar-desktop').text('⇦');
+	$('#toggle-sidebar-mobile').text('⇦');
+
+});
+</script>
+<button id="toggle-sidebar-mobile" class="flex md:hidden fixed left-64 top-1/2 transform -translate-y-1/2 z-20 bg-white px-3 py-2 rounded-r-md toggle-btn-mobile" style="height: 80px; width: 10px; justify-content: center; align-items: center;">
+	&#x21E6;
+</button>
+<div id="sidebar" class="sidebar bg-blue-500 w-64  top-0 left-0 z-10 transform bg-white p-4 shadow-md flex">
+	<div class="panel border px-5 flex flex-col me-2 rounded-md" style="align-items: center; width: max-content;">
 		<button class="border-b border-gray-500 home tooltip" data-tooltip="Home">
 			<span class="tooltiptext">Go to Home</span>
 			<img src="/static/images/logo.jpg" class="mb-2" style="border-radius: 50%; width: 50px;">
@@ -94,7 +153,7 @@
 			<svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-sc942k" focusable="false" aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M17.013 19.17a1.63 1.63 0 0 1-.91-.276l-.983-.645a.772.772 0 0 1-.317-.85c.071-.235.102-.51.102-.818v-4.167c0-1.668-1.044-2.713-2.711-2.713H5.246c-.123 0-.235.01-.348.021a.819.819 0 0 1-.583-.204.737.737 0 0 1-.246-.563V6.119C4.069 3.109 6.177 1 9.186 1h8.697C20.892 1 23 3.109 23 6.119v5.22c0 1.485-.502 2.795-1.422 3.696-.736.747-1.76 1.229-2.926 1.372v1.136c0 .615-.338 1.168-.87 1.454a1.86 1.86 0 0 1-.767.174h-.002Zm-.614-1.924.665.379c.06-.03.06-.082.06-.092V15.68c0-.42.349-.768.768-.768 1.074 0 1.985-.338 2.61-.972.644-.634.971-1.535.971-2.61V6.107c0-2.18-1.402-3.582-3.581-3.582H9.194c-2.18 0-3.581 1.403-3.581 3.582v2.048h6.59c2.496 0 4.245 1.75 4.245 4.248v4.166c-.01.236-.02.461-.051.676h.002Z" fill="currentColor"></path><path d="M5.932 23a1.46 1.46 0 0 1-.676-.165 1.459 1.459 0 0 1-.777-1.3v-.778c-.9-.143-1.699-.521-2.292-1.115C1.409 18.864 1 17.799 1 16.57v-4.166c0-2.313 1.515-4.012 3.766-4.227.164-.01.317-.021.481-.021h6.948c2.496 0 4.246 1.75 4.246 4.248v4.166c0 .45-.052.87-.164 1.25-.46 1.842-2.026 2.998-4.083 2.998H9.646l-2.895 1.926a1.412 1.412 0 0 1-.82.256ZM5.246 9.69c-.123 0-.235.01-.348.02-1.473.134-2.363 1.147-2.363 2.693v4.166c0 .82.256 1.506.736 1.986.47.471 1.156.727 1.974.727.42 0 .767.348.767.768v1.34l2.968-1.975a.793.793 0 0 1 .43-.133h2.783c1.35 0 2.303-.675 2.599-1.863.071-.256.112-.542.112-.849v-4.167c0-1.668-1.043-2.713-2.711-2.713H5.246Z" fill="currentColor"></path></svg>
 		</button>
 	</div>
-	<div class="create_chatbot_sidebar hidden w-full">
+	<div class="create_chatbot_sidebar flex hidden w-full" style="white-space: nowrap;">
 		<button id="name_desc" class="w-full bg-gray-100 py-2 px-4 rounded-md mb-4 text-left" disabled>Set Chatbot Name</button>	
 		<button id="upload" class="w-full bg-gray-100 py-2 px-4 rounded-md mb-4 text-left" disabled>Upload Knowledge Base</button>	
 		<button id="finalize" class="w-full bg-gray-100 py-2 px-4 rounded-md mb-4 text-left" disabled>Review and Save</button>	
@@ -126,15 +185,18 @@
 			<div class="conversation-buttons"></div>
 		</div>
 	</div>
+	<button id="toggle-sidebar-desktop" class=" hidden md:flex bg-white border-right px-3 py-2 rounded-r-md toggle-btn-desktop">
+		&#x21E6;
+	</button>
 </div>
 
 
 <script>
-	$(document).on('click', '.delete-chat', function() {
-		localStorage.setItem('chat_uuid', 'None');
-		var button = $(this);
-		var sessionUuid = button.data('uuid');
-		if (sessionUuid == null || sessionUuid == undefined)
+$(document).on('click', '.delete-chat', function() {
+	localStorage.setItem('chat_uuid', 'None');
+	var button = $(this);
+	var sessionUuid = button.data('uuid');
+	if (sessionUuid == null || sessionUuid == undefined)
 		{
 			button.closest('.chat').fadeOut(300, function() {
 				$(this).remove();
@@ -142,141 +204,141 @@
 			$('#main-content').load("{% url 'ai_tools:chat_form' %}?chatbot_uuid=" + $('#select-chatbot').val());
 		}
 		else
-		{
-			$.ajax({
+			{
+				$.ajax({
 		url: "{% url 'ai_tools:delete_chat_session' %}",  // Ensure this URL is correctly mapped in your Django URLs
-		method: "POST",
-		data: {
-			'uuid': sessionUuid,
+					method: "POST",
+					data: {
+						'uuid': sessionUuid,
 			'csrfmiddlewaretoken': '{{ csrf_token }}'  // Include the CSRF token if you are using Django's CSRF protection
-		},
-		success: function() {
-			button.closest('.chat').fadeOut(300, function() {
-				$(this).remove();
-			});
-			localStorage.setItem('chat_uuid', undefined);
-			$('#main-content').load("{% url 'ai_tools:chat_form' %}?chatbot_uuid=" + $('#select-chatbot').val());
-		},
-		error: function() {
-			alert("Error deleting chat session.");
-		}
-	});
-		}
-	});
-
-	$(document).ready(function() {
-
-		function loadChatSessions() {
-			var chatbotUuid = $('#select-chatbot').val();
-			$.ajax({
-				url: "{% url 'ai_tools:get_chat_sessions' %}",
-				data: {
-					'chatbot_uuid': chatbotUuid
-				},
-				success: function(data) {
-					console.log(data)
-					$('.conversations .chat').remove();
-					if (data.length > 0) {
-						data.forEach(function(session) {
-							var chatButton = $('<div class="chat bg-gray-200 p-2 rounded-md mb-2"><button class="chat-name text-gray-700 w-full rounded-md text-left ps-2" data-uuid="' + session.uuid + '">' + session.name + '</button><button class="delete-chat text-red-600" data-uuid="' + session.uuid + '"><i class="fas fa-trash"></i></button></div>');
-							$('.conversation-buttons').prepend(chatButton);
+					},
+					success: function() {
+						button.closest('.chat').fadeOut(300, function() {
+							$(this).remove();
 						});
+						localStorage.setItem('chat_uuid', undefined);
+						$('#main-content').load("{% url 'ai_tools:chat_form' %}?chatbot_uuid=" + $('#select-chatbot').val());
+					},
+					error: function() {
+						alert("Error deleting chat session.");
 					}
-				}
-			});
-		}
-
-		$('#select-chatbot').change(function(){
-			loadChatSessions();
-			localStorage.setItem('chat_uuid', 'None');
-			$('#main-content').load("{% url 'ai_tools:chat_form' %}?chatbot_uuid=" + $('#select-chatbot').val());
+				});
+			}
 		});
 
+$(document).ready(function() {
 
+	function loadChatSessions() {
 		var chatbotUuid = $('#select-chatbot').val();
-		if (chatbotUuid != 0){
-			loadChatSessions();
-		}
-
-
-		function isNewChatButtonExists() {
-			return $('.conversations button:contains("New Chat")').length > 0;
-		}
-
-		$('#addChatBtn').click(function(){
-			var chatButton = $('<div class="chat bg-gray-200 p-2 rounded-md mb-2" style="display:none"><button class="chat-name text-gray-700 w-full rounded-md text-left ps-2" >New Chat</button><button class="delete-chat text-red-600"><i class="fas fa-trash"></i></button></div>');
-			$('.conversation-buttons').prepend(chatButton);
-			chatButton.fadeIn();
-			$('#main-content').load("{% url 'ai_tools:chat_form' %}?chatbot_uuid=" + $('#select-chatbot').val());
-			localStorage.setItem('chat_uuid', 'None');
-		});
-
-		$('.home').click(function(){
-			if (!isNewChatButtonExists()) {
-				var newChatButton = $('<div class="chat bg-gray-200 p-2 rounded-md mb-2" style="display:none"><button class="chat-name text-gray-700 w-full rounded-md text-left ps-2">New Chat</button><button class="delete-chat text-red-600"><i class="fas fa-trash"></i></button></div>');
-				$('.conversation-buttons').prepend(newChatButton);
-				newChatButton.fadeIn();
+		$.ajax({
+			url: "{% url 'ai_tools:get_chat_sessions' %}",
+			data: {
+				'chatbot_uuid': chatbotUuid
+			},
+			success: function(data) {
+				console.log(data)
+				$('.conversations .chat').remove();
+				if (data.length > 0) {
+					data.forEach(function(session) {
+						var chatButton = $('<div class="chat bg-gray-200 p-2 rounded-md mb-2"><button class="chat-name text-gray-700 w-full rounded-md text-left ps-2" data-uuid="' + session.uuid + '">' + session.name + '</button><button class="delete-chat text-red-600" data-uuid="' + session.uuid + '"><i class="fas fa-trash"></i></button></div>');
+						$('.conversation-buttons').prepend(chatButton);
+					});
+				}
 			}
-			$('.create_chatbot_sidebar').addClass('hidden')
-			$('.sidebar-general').removeClass('hidden')
-			$('#main-content').load("{% url 'ai_tools:chat_form' %}?chatbot_uuid=" + $('#select-chatbot').val());
-			localStorage.setItem('chat_uuid', 'None');
 		});
+	}
 
-		if($('#select-chatbot').val() != 0){
+	$('#select-chatbot').change(function(){
+		loadChatSessions();
+		localStorage.setItem('chat_uuid', 'None');
+		$('#main-content').load("{% url 'ai_tools:chat_form' %}?chatbot_uuid=" + $('#select-chatbot').val());
+	});
 
-			$('#main-content').load("{% url 'ai_tools:chat_form' %}?chatbot_uuid=" + $('#select-chatbot').val());
+
+	var chatbotUuid = $('#select-chatbot').val();
+	if (chatbotUuid != 0){
+		loadChatSessions();
+	}
+
+
+	function isNewChatButtonExists() {
+		return $('.conversations button:contains("New Chat")').length > 0;
+	}
+
+	$('#addChatBtn').click(function(){
+		var chatButton = $('<div class="chat bg-gray-200 p-2 rounded-md mb-2" style="display:none"><button class="chat-name text-gray-700 w-full rounded-md text-left ps-2" >New Chat</button><button class="delete-chat text-red-600"><i class="fas fa-trash"></i></button></div>');
+		$('.conversation-buttons').prepend(chatButton);
+		chatButton.fadeIn();
+		$('#main-content').load("{% url 'ai_tools:chat_form' %}?chatbot_uuid=" + $('#select-chatbot').val());
+		localStorage.setItem('chat_uuid', 'None');
+	});
+
+	$('.home').click(function(){
+		if (!isNewChatButtonExists()) {
+			var newChatButton = $('<div class="chat bg-gray-200 p-2 rounded-md mb-2" style="display:none"><button class="chat-name text-gray-700 w-full rounded-md text-left ps-2">New Chat</button><button class="delete-chat text-red-600"><i class="fas fa-trash"></i></button></div>');
+			$('.conversation-buttons').prepend(newChatButton);
+			newChatButton.fadeIn();
+		}
+		$('.create_chatbot_sidebar').addClass('hidden')
+		$('.sidebar-general').removeClass('hidden')
+		$('#main-content').load("{% url 'ai_tools:chat_form' %}?chatbot_uuid=" + $('#select-chatbot').val());
+		localStorage.setItem('chat_uuid', 'None');
+	});
+
+	if($('#select-chatbot').val() != 0){
+
+		$('#main-content').load("{% url 'ai_tools:chat_form' %}?chatbot_uuid=" + $('#select-chatbot').val());
+	}
+
+
+	$('#create-chatbot').click(function() {
+		$('.create_chatbot_sidebar').removeClass('hidden')
+		$('.sidebar-general').addClass('hidden')
+		$('#main-content').load("{% url 'ai_tools:chatbot_form' %}");
+	});
+
+
+	$('.customize-chatbot').click(function() {
+		var chatbot = $('#select-chatbot').val();
+		$('.create_chatbot_sidebar').addClass('hidden')
+		$('.sidebar-general').removeClass('hidden')
+		$('#main-content').load("{% url 'ai_tools:chatbot_customizations' %}?chatbot_uuid=" + chatbot);
+	});
+	$(document).on('click', '.chat .chat-name', function() {
+		var chat = $(this).data('uuid')
+		if(chat != undefined){
+
+			$('#main-content').load("{% url 'ai_tools:chat_form' %}?chat_uuid=" + chat);
 		}
 
+	});
+	$('.chatbot_settings').click(function() {
+		var chatbot = $('#select-chatbot').val();
+		$('.create_chatbot_sidebar').addClass('hidden')
+		$('.sidebar-general').removeClass('hidden')
+		var url = "{% url 'ai_tools:chatbot_settings' chatbot_id='CHATBOT_ID' %}".replace('CHATBOT_ID', chatbot);
+		$('#main-content').load(url);
+	});
 
-		$('#create-chatbot').click(function() {
-			$('.create_chatbot_sidebar').removeClass('hidden')
-			$('.sidebar-general').addClass('hidden')
-			$('#main-content').load("{% url 'ai_tools:chatbot_form' %}");
-		});
-
-
-		$('.customize-chatbot').click(function() {
-			var chatbot = $('#select-chatbot').val();
-			$('.create_chatbot_sidebar').addClass('hidden')
-			$('.sidebar-general').removeClass('hidden')
-			$('#main-content').load("{% url 'ai_tools:chatbot_customizations' %}?chatbot_uuid=" + chatbot);
-		});
-		$(document).on('click', '.chat .chat-name', function() {
-			var chat = $(this).data('uuid')
-			if(chat != undefined){
-
-				$('#main-content').load("{% url 'ai_tools:chat_form' %}?chat_uuid=" + chat);
-			}
-
-		});
-		$('.chatbot_settings').click(function() {
-			var chatbot = $('#select-chatbot').val();
-			$('.create_chatbot_sidebar').addClass('hidden')
-			$('.sidebar-general').removeClass('hidden')
-			var url = "{% url 'ai_tools:chatbot_settings' chatbot_id='CHATBOT_ID' %}".replace('CHATBOT_ID', chatbot);
-			$('#main-content').load(url);
-		});
-
-		$('.export-chatbot').click(function() {
-			$('.create_chatbot_sidebar').addClass('hidden')
-			$('.sidebar-general').removeClass('hidden')
-			$('#main-content').load("{% url 'ai_tools:export_chatbot' %}");
-		});
-		$('.export-chats').click(function() {
-			$('.create_chatbot_sidebar').addClass('hidden')
-			$('.sidebar-general').removeClass('hidden')
-			$('#main-content').load("{% url 'ai_tools:export_chats' %}");
-		});
+	$('.export-chatbot').click(function() {
+		$('.create_chatbot_sidebar').addClass('hidden')
+		$('.sidebar-general').removeClass('hidden')
+		$('#main-content').load("{% url 'ai_tools:export_chatbot' %}");
+	});
+	$('.export-chats').click(function() {
+		$('.create_chatbot_sidebar').addClass('hidden')
+		$('.sidebar-general').removeClass('hidden')
+		$('#main-content').load("{% url 'ai_tools:export_chats' %}");
+	});
 
         // Function to handle tooltips
-		$('.tooltip').hover(function() {
+	$('.tooltip').hover(function() {
             // Hover over code
-			var title = $(this).attr('data-tooltip');
-			$(this).find('.tooltiptext').text(title);
-		}, function() {
+		var title = $(this).attr('data-tooltip');
+		$(this).find('.tooltiptext').text(title);
+	}, function() {
             // Hover out code
-			$(this).find('.tooltiptext').text('');
-		});
+		$(this).find('.tooltiptext').text('');
 	});
+});
 </script>

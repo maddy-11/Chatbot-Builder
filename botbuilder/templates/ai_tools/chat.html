@@ -1,9 +1,10 @@
+
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
 <style>
 /* Custom styles */
-.sidebar {
+/*.sidebar {
     width: 20%;
-}
+}*/
 body, html {
     height: 100%;
     display: flex;
@@ -12,9 +13,9 @@ body, html {
 }
 .prompts-container {
     display: flex;
-    overflow-x: auto; /* Enable horizontal scrolling */
-    max-width: 100%; /* Adjust as needed */
-    white-space: nowrap; /* Prevent prompts from wrapping */
+    overflow-x: auto;
+    max-width: 80%;
+    white-space: nowrap;
 }
 
 .prompt {
@@ -348,5 +349,9 @@ $(document).ready(function() {
 
         // Replace the content in chat.You with formatted HTML
     $('.chat-message.chatbot').html(formattedText);
+
+});
+    $(document).ready(function() {
+    $('.prompts-container').css('max-width', ($('#chat_history').outerWidth()) + 'px');
 });
 </script>

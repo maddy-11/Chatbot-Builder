@@ -10,14 +10,23 @@
 		flex-direction: column;
 		color:#000;
 	}
+
+	#main-content{
+		width:100%
+	}
+	@media (max-width: 680px) {
+	#main-content{
+		position:fixed
+	}
+}
 	
 </style>
 
-<div class="flex bg-gray-100" style="min-height: 88vh;">
+<div class="flex h-screen bg-gray-100" style="min-height: 88vh;">
 	{% include 'ai_tools/sidebar.html' %}
 
 	<!-- Main Content -->
-	<div id="main-content" class="flex-1 p-4">
+	<div id="main-content" class="">
 		<div class="lg:w-3/4 p-5 mt-5 mx-auto bg-white"> 
 			<h2 class="text-4xl">Create Your First Chatbot</h2>
 			<p class="my-5  p-5 border">Click on the '+' Icon on the left sidebar</p>
