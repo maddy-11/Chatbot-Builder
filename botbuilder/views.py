@@ -439,6 +439,11 @@ def embed_js(request, chatbot_uuid):
         font-weight: bold;
         font-size: 0.875rem; /* equivalent to Tailwind's text-sm */
     }
+    #chatbot-modal h2 {
+        font-weight: bold;
+        font-size: 1.2em;
+        color
+    }
     #chatbot-modal .flex-grow {
         flex-grow: 1;
     }
@@ -511,6 +516,7 @@ def embed_js(request, chatbot_uuid):
         white-space: -pre-wrap;
         white-space: -o-pre-wrap;
         word-wrap: break-word;
+        color: """+ customization.get('font_color', '') +"""!important;
     }
     .chat-message ul {
         list-style-type: disc;
